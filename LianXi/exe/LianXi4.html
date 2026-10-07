@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">跨界传参</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="lieBiaoyei">
+			
+				
+			</ul>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LieBiao(){
+
+					mui.ajax(API_BASE + '/api/projects/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var LieBiaoHTML = '';
+								var LieBiao = data.rows;
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+								LieBiaoHTML = `<li class="mui-table-view" style="padding: 3%;">
+						<img style="height: 200px; width: 100%;" src="${API_BASE + LieBiao[i].imgUrl}">
+						<div class="mui-media-body">
+							<h4>${LieBiao[i].projectTitle}</h4>
+							<h5>${LieBiao[i].receivingInstitution}</h5>
+							<h5>${LieBiao[i].onLineDay}</h5>
+							<p class="mui-ellipsis">${LieBiao[i].introduce}</p>
+							<hr >
+							<p style="width: 100%;">
+								人类：${LieBiao[i].feedbackNum}
+								<button BiaoMIngID = "${LieBiao[i].id}" type="button" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 3%;border-radius: 10px;">报名</button>
+							</p>
+						</div>
+				</li>`
+								}
+								document.getElementById('lieBiaoyei').innerHTML = LieBiaoHTML;
+								var XingQingList = document.querySelectorAll('#lieBiaoyei .mui-media');
+								for (var j = 0 ; j < XingQingList.length ; j++) {
+									(function(NeiRong){
+										NeiRong.addEventListener('tap',function(){
+											plus.storage.setItem('id')
+											var id = this.getAttribute('BiaoMIngID');
+											mui.openWindow('XingQingYei4.html',{
+												extea:{
+													id:id
+												}
+											})
+										})
+									})(XingQingList[j])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LieBiao()
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情页</h1>
+		</header>
+		<div class="mui-content" style="padding-bottom: 60px;">
+			
+			<div id="NeiRong">
+				<img src="" style="height: 200px; width: 100%;">
+				<div style="padding: 10px;">
+					<h4>加载中...</h4>
+				</div>
+			</div>
+			
+			<div style="position: absolute;bottom: 0;left: 0;right: 0;height: 50px;background-color: #f7f7f7;">
+				<span id="BaoMingRenShu" style="line-height: 50px;margin-left: 10px;">报名人数：</span>
+				<button type="button" class="mui-btn mui-btn-red" id="BiaoMing" style="position: absolute;right: 0;bottom: 0;height: 50px;width: 150px;border-radius: 0;">报名</button>
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {};
+
+				var id = plus.storage.getItem('XingXi') || extra.id;
+
+				console.log('拿到的 id =', id);
+
+				if (!id) {
+					mui.toast('未获取到活动id');
+					return;
+				}
+
+				mui.ajax(API_BASE + '/api/projects/' + id,{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+
+						var NeiRongHTML = '';
+						if (data.code == 200) {
+
+							var row = data.data;
+							NeiRongHTML = `<img src="${API_BASE + row.imgUrl}" style="height: 200px; width: 100%;">
+				<div style="padding: 10px;">
+					<h4>${row.projectTitle}</h4>
+					<h5>${row.receivingInstitution}</h5>
+					<h5>${row.onLineDay}</h5>
+					<br>
+					<p>${row.introduce}</p>
+				</div>`;
+							document.getElementById('BaoMingRenShu').innerHTML = '报名人数：' + row.feedbackNum;
+						} else {
+							NeiRongHTML = '<p style="padding: 20px;">加载失败：' + (data.msg || data.code) + '</p>';
+						}
+						document.getElementById('NeiRong').innerHTML = NeiRongHTML;
+					},
+					error:function(xhr,type,errorThrown){
+						mui.toast('请求失败：' + type);
+					}
+				});
+
+				document.getElementById('BiaoMing').addEventListener('tap',function(){
+					mui.confirm('你确定报名么？','提示',['取消','确定'],function(e){
+						if (e.index == 1) {
+							mui.toast('报名成功')
+						}
+					})
+				});
+			})
+		</script>
+	</body>
+
+</html>

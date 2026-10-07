@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">跨界传参3</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="KuaiJueiC	uanCanDOme3">
+				
+				<li class="mui-table-view mui-media">
+						<img style="height: 200px; width: 100%; padding: 15px;" src="">
+						<div class="mui-media-body" style="padding: 15px;">
+							<h4>1</h4>
+							<h5>1</h5>
+							<h5>1</h5>
+							<p class="mui-ellipsis">件幸福的事情；可是，打呼噜怎么办？</p>
+						<hr >
+						<p>人类:<button XingQingYeiID = "" type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 5%;">报名</button></p>
+						</div>
+				</li>
+				
+			</ul>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function liebiao(){
+
+				mui.ajax(API_BASE + '/api/projects/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+							var Liebiao = '';
+							for (var i = 0 ; i < data.rows.length ; i++) {
+
+							Liebiao += `<li class="mui-table-view">
+						<img style="height: 200px; width: 100%; padding: 15px;" src="${API_BASE + data.rows[i].imgUrl}">
+						<div class="mui-media-body" style="padding: 15px;">
+							<h4>${data.rows[i].projectTitle}</h4>
+							<h5>${data.rows[i].receivingInstitution}</h5>
+							<h5>${data.rows[i].onLineDay}</h5>
+							<p class="mui-ellipsis">${data.rows[i].introduce}</p>
+						<hr >
+						<p>人类:${data.rows[i].feedbackNum}<button XingQingYeiID = "${data.rows[i].id}" type="button" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 5%;">报名</button></p>
+						</div>
+				</li>`
+							}
+							document.getElementById('KuaiJueiCuanCanDOme3').innerHTML = Liebiao
+							var XingQingList = document.querySelectorAll('#KuaiJueiCuanCanDOme3 .mui-media');
+							for (var j = 0 ; j < XingQingList.length ; j++) {
+								(function(NeiRong){
+									NeiRong.addEventListener('tap',function(){
+										plus.storage.setItem('id')
+									var id = this.getAttribute('XingQingYeiID');
+
+									mui.openWindow('XingQingYei3.html',{
+										extras:{id:id}
+									})
+									})
+								})(XingQingList[j])
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				liebiao()
+			})
+		</script>
+	</body>
+
+</html>

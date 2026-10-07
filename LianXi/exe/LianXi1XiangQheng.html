@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">详情dome1</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="Xiangqig">
+				
+				<li class="mui-table-view-cell mui-media">
+						<img src="" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h4>1</h4>
+							<h5>1</h5>
+							<h5>1</h5>
+							<p class="mui-ellipsis">加载中...</p>
+						</div>
+				</li>
+				
+			</ul>
+			
+			<button id="BaoMingButton" style="background-color: red; height: 60px; width: 150px; color: #0062CC; position: fixed;right: 0; bottom: 0;" >报名</button>
+			
+		</div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+			    var extra = plus.webview.currentWebview().extra || {};
+			    var id = plus.storage.getItem('XingXi') || extra.id;
+
+			    console.log('拿到的 id =', id);
+
+			    if (!id) {
+			        mui.toast('未获取到活动id');
+			        return;
+			    }
+
+				function lbt(){
+
+				mui.ajax(API_BASE + '/api/projects/' + id,{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+
+						var XiangQingHTML = '';
+						if (data.code == 200) {
+
+							var row = data.data;
+							XiangQingHTML += `<li class="mui-table-view-cell mui-media">
+						<img src="${API_BASE + row.imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h4>${row.projectTitle}</h4>
+							<h5>${row.receivingInstitution}</h5>
+							<h5>${row.onLineDay}</h5>
+							<p class="mui-ellipsis">${row.introduce}</p>
+						</div>
+				</li>`;
+						} else {
+							XiangQingHTML = '<li class="mui-table-view-cell">加载失败：' + (data.msg || data.code) + '</li>';
+						}
+						document.getElementById('Xiangqig').innerHTML = XiangQingHTML;
+					},
+					error:function(xhr,type,errorThrown){
+						mui.toast('请求失败：' + type);
+					}
+				});
+				}
+				lbt()
+			})
+		</script>
+	</body>
+
+</html>

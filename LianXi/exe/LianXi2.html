@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">跨界传参2</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="BiaoMinglieBiao">
+				
+				<li class="mui-table-view-cell mui-media" LiebiaoID="">
+						<img src="" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h4>1</h4>
+							<h5>1</h5>
+							<h5>1</h5>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+						<hr >
+						<p>人类:<button type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 5%;bottom: 3px; border-radius: 50px;">报名</button></p>
+				</li>
+				
+			</ul>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LieBiaoYei(){
+
+					mui.ajax(API_BASE + '/api/projects/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+								var LieBiaoHTML = '';
+								var Yei = data.rows;
+								for (var i = 0 ; i < Yei.length ; i++) {
+
+								LieBiaoHTML += `<li class="mui-table-view-cell mui-media" LiebiaoID="${Yei[i].id}">
+						<img src="${API_BASE + Yei[i].imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h4>${Yei[i].projectTitle}</h4>
+							<h5>${Yei[i].receivingInstitution}</h5>
+							<h5>${Yei[i].onLineDay}</h5>
+							<p class="mui-ellipsis">${Yei[i].introduce}</p>
+						</div>
+						<hr >
+						<p>人类:${Yei[i].feedbackNum}<button type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 5%;bottom: 3px; border-radius: 50px;">报名</button></p>
+				</li>`
+							}
+							document.getElementById('BiaoMinglieBiao').innerHTML = LieBiaoHTML;
+							var YeiMianlist = document.querySelectorAll('#BiaoMinglieBiao .mui-media');
+							for (var j = 0 ; j < YeiMianlist.length ; j++) {
+								(function(NeiRong){
+									NeiRong.addEventListener('tap',function(){
+										var id = this.getAttribute('LiebiaoID')
+
+										plus.storage.setItem('XingXi', id)
+										mui.openWindow('xiangQungYeii2.html',{
+											extras:{id:id}
+										})
+									})
+								})(YeiMianlist[j])
+							}
+								}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LieBiaoYei()
+
+			})
+		</script>
+	</body>
+
+</html>

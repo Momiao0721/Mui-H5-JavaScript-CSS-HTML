@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">详情页3</h1>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		</header>
+		<div class="mui-content">
+			
+			<div id="NeiRong">
+				<img src="" style="height: 200px; width: 100%;">
+				
+				<div style="position: relative; padding: 10px;">
+					<h3>标题：</h3>
+					<h5>时间</h5>
+					<h5>详情</h5>
+					<br>
+					<p>123</p>
+				</div>
+			</div>
+			
+			<div id="BiaoMing" style="position:absolute;bottom: 0;width: 100%; background-color: #f7f7f7;">
+				
+				<p>报名人数：
+				<button type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 0; height: 50px; width: 150px;">报名</button>
+				</p>
+				
+			</div>
+			
+			
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {};
+				var id = plus.storage.getItem('XingXi') || extra.id
+				console.log(id)
+
+				if (!id) {
+					mui.toast('没有Id')
+					return
+				}
+
+				function xingQing(){
+
+				mui.ajax(API_BASE + '/api/projects/' + id,{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+							var xingQingHTML = '';
+							var BiaoMingBottonhHTML = '';
+
+							var row = data.data
+							xingQingHTML += `<img src="${API_BASE + row.imgUrl}" style="height: 200px; width: 100%;">
+
+				<div style="position: relative; padding: 10px;">
+					<h3>${row.projectTitle}</h3>
+					<h5>${row.receivingInstitution}</h5>
+					<h5>${row.filingsNo}</h5>
+					<br>
+					<p>${row.introduce}</p>
+				</div>`
+							BiaoMingBottonhHTML += `<p>报名人数：${row.feedbackNum}
+				<button type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 0; height: 50px; width: 150px;" id="BaoMIng">报名</button>
+				</p>`
+				document.getElementById('NeiRong').innerHTML = xingQingHTML;
+				document.getElementById('BiaoMing').innerHTML = BiaoMingBottonhHTML;
+				document.getElementById('BaoMIng').addEventListener('tap',function(){
+					mui.confirm('你确定报名么','提示',['否','是'],function(e){
+						if (e.index == 1) {
+							mui.toast('成功报名')
+						}
+					})
+				})
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+
+				}
+				xingQing()
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">练习</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			<div id="XingQing">
+				
+				<img src="" style="height: 200px; width: 100%;">
+				
+				<div style="position: absolute;left: 0;">
+					<h4>1</h4>
+					<h5>1</h5>
+					<h5>1</h5>
+					<br>
+					
+					<p>1</p>
+				</div>
+				<div>
+					
+				<p  style="position: absolute;left: 0;bottom: 0;">报名人类：</p>
+				<button type="button" class="mui-btn mui-btn-blue" id="BiaoMing" style="position: absolute;right: 0;bottom: 0; width: 150px; background-color: red; height: 50px;">报名</button>
+				</div>
+			</div>
+				
+				
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+
+				var id = plus.storage.getItem('XingXi') || extra.id
+				console.log(id)
+
+				function XingQing(){
+
+					mui.ajax(API_BASE + '/api/projects/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+
+							var XingQingHTML = '';
+							if (data.code == 200) {
+
+								XingQingHTML = `<img src="${API_BASE + data.data.imgUrl}" style="height: 200px; width: 100%;">
+
+				<div style="position: absolute;left: 0;">
+					<h4>${data.data.projectTitle}</h4>
+					<h5>${data.data.receivingInstitution}</h5>
+					<h5>${data.data.onLineDay}</h5>
+					<br>
+
+					<p>${data.data.introduce}</p>
+				</div>
+				<div>
+
+				<p style="position: absolute;left: 0;bottom: 0;">报名人类：${data.data.feedbackNum}</p>
+				<button type="button" class="mui-btn mui-btn-blue" id="BiaoMing" style="position: absolute;right: 0;bottom: 0; width: 150px; background-color: red; height: 50px;">报名</button>
+				</div>`
+							} else {
+								XingQingHTML = '<p style="padding: 20px;">加载失败：' + (data.msg || data.code) + '</p>';
+							}
+							document.getElementById('XingQing').innerHTML = XingQingHTML
+
+							document.getElementById('BiaoMing').addEventListener('tap',function(){
+
+								mui.confirm('你确定报名么？','提示',['取消','确定'],function(e){
+									if (e.index == 1) {
+										mui.toast('报名成功')
+									}
+								})
+							})
+						},
+						error:function(xhr,type,errorThrown){
+							mui.toast('请求失败：' + type)
+						}
+					});
+
+				}
+				XingQing()
+			})
+		</script>
+	</body>
+
+</html>

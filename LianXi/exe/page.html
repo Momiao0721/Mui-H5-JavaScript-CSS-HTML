@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="LianXi1">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">练习</span>
+			</a>
+			<a class="mui-tab-item"id="LianXi2">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">练习2</span>
+			</a>
+			<a class="mui-tab-item" id="LianXi3">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">练习3</span>
+			</a>
+			<a class="mui-tab-item" id="LianXi4">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">练习4</span>
+			</a>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+		mui.init({
+			subpages:[{
+			  url:'LianXi4.html',
+		      id:'LianXi4',
+		      styles:{
+		        top:'0px',
+				bottom:'50px'
+		      },
+		      extras:{}
+			},
+			{
+			  url:'LianXi3.html',
+			  id:'LianXi3',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			},
+			{
+			  url:'LianXi2.html',
+			  id:'LianXi2',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			},
+			{
+			  url:'LianXi1.html',
+			  id:'LianXi1',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			}
+			]
+		})
+		mui.plusReady(function () {
+
+			function LinXi(id){
+
+			plus.webview.getWebviewById(id).show()
+
+			}
+
+			document.getElementById('LianXi4').addEventListener('tap',function(){
+				LinXi('LianXi4')
+			});
+			document.getElementById('LianXi3').addEventListener('tap',function(){
+				LinXi('LianXi3')
+			});
+			document.getElementById('LianXi2').addEventListener('tap',function(){
+				LinXi('LianXi2')
+			});
+			document.getElementById('LianXi1').addEventListener('tap',function(){
+				LinXi('LianXi1')
+			});
+		})
+		</script>
+	</body>
+
+</html>
