@@ -1,0 +1,1 @@
+var API_BASE = 'http://YOUR_SERVER_HOST:PORT';

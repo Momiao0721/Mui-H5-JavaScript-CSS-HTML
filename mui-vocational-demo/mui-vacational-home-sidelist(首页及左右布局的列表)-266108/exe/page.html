@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="ylsj">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">心得</span>
+			</a>
+			
+			<a class="mui-tab-item" id="sqfw">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">公益</span>
+			</a>
+			<a class="mui-tab-item" id="sjfx">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">数据分析</span>
+			</a>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages:[{
+				  url:'sjfx.html',
+			      id:'sjfx',
+			      styles:{
+			        top:'0px',
+					bottom:'50px'
+			      },
+			      extras:{}
+				},
+				{
+				  url:'sqfw.html',
+				  id:'sqfw',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+
+				{
+				  url:'ylsj.html',
+				  id:'ylsj',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'home.html',
+				  id:'home',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				}
+				]
+			})
+			mui.plusReady(function () {
+
+				function YeiMian(id){
+
+					plus.webview.getWebviewById(id).show();
+
+				}
+				document.getElementById('sjfx').addEventListener('tap',function(){
+					YeiMian('sjfx')
+				})
+				document.getElementById('sqfw').addEventListener('tap',function(){
+					YeiMian('sqfw')
+				})
+
+				document.getElementById('ylsj').addEventListener('tap',function(){
+					YeiMian('ylsj')
+				})
+				document.getElementById('home').addEventListener('tap',function(){
+					YeiMian('home')
+				})
+			})
+		</script>
+	</body>
+
+</html>
