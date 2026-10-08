@@ -49,14 +49,25 @@
 							var lrHTML = '';
 							for (var i = 0 ; i < data.rows.length ; i++) {
 
-							lrHTML += `<li class="mui-table-view-cell mui-col-xs-6" style="float: left;">
+							lrHTML += `<li TiaoZuanID = "${data.rows[i].id}" class="mui-table-view-cell mui-col-xs-6 mui-media" style="float: left;">
 					<img src="${API_BASE + data.rows[i].imgUrl}" style="height: 100px; width: 100%;">
 					<h4 class="mui-ellipsis">${data.rows[i].title}</h4>
 					<h5>${data.rows[i].name}</h5>
 					<p class="mui-ellipsis">${data.rows[i].content}</p>
 				 </li>`
-							}
+						}
 							document.getElementById('rlList').innerHTML = lrHTML;
+							var YeiMianlist = document.querySelectorAll('#rlList .mui-media')
+							for (var j = 0 ; j < YeiMianlist.length ; j++) {
+								(function(NeiRong){
+									NeiRong.addEventListener('tap',function(){
+										var id = this.getAttribute('TiaoZuanID')
+										mui.openWindow('XiangQingYeiList.html',{
+											extras:{id:id}
+										})
+									})
+								})(YeiMianlist[j])
+							}
 						}
 					},
 					error:function(xhr,type,errorThrown){

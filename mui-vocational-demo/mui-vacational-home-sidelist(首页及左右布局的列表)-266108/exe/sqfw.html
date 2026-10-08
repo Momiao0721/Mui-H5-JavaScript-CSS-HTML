@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">左右3</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" style="overflow: hidden;" id="San">
+				
+			
+					
+				</ul>
+			
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function San(){
+
+				mui.ajax(API_BASE + '/api/model/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if(data.code == 200){
+							var SanHTML = '';
+							var San = data.rows;
+							for (var i = 0 ; i < San.length ; i++) {
+
+							SanHTML += `<li YeiMianID='${San[i].id}' class="mui-table-view-cell mui-col-xs-4 mui-media" style="overflow: hidden;float: left;">
+				<img src="${API_BASE + San[i].imgUrl}" style="height: 100px; width: 100%;">
+				<h4 class="mui-ellipsis">${San[i].title}</h4>
+				<h5 >${San[i].name}</h5>
+				<h5 class="mui-ellipsis">${San[i].content}</h5>
+			</li>`
+							}
+							document.getElementById('San').innerHTML = SanHTML;
+							var YeiMianList = document.querySelectorAll('#San .mui-media')
+							for (var j = 0 ; j < YeiMianList.length ; j++) {
+								(function(YeiMian){
+									YeiMian.addEventListener('tap',function(){
+										var id = this.getAttribute('YeiMianID');
+										mui.openWindow('XingQingYei2San.html',{
+											extras:{
+												id:id
+											}
+										})
+									})
+								})(YeiMianList[j])
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				San()
+			})
+		</script>
+	</body>
+
+</html>

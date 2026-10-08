@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">列表标准</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="biaoZueng">
+				
+				
+				
+			</ul>
+			
+		</div>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function YeiMina(){
+
+				mui.ajax(API_BASE + '/api/public/projects/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+							var BiaoZuenHTML = '';
+							var BZHTML = data.rows;
+							for (var i = 0 ; i < BZHTML.length ; i++) {
+
+							BiaoZuenHTML += `<li style="padding: 10px;">
+					<a href="javascript:;">
+						<img src="${API_BASE + BZHTML[i].imgUrl}" style="height: 200px;width: 100%;">
+						<div class="mui-media-body">
+							<h4>${BZHTML[i].projectTitle}</h4>
+							<h5>${BZHTML[i].receivingInstitution}</h5>
+							<p class="mui-ellipsis">${BZHTML[i].introduce}</p>
+							<hr >
+							<p style="position: relative;left: 3%;">报名人类:${BZHTML[i].feedbackNum}
+							<button XingQingID="$[BZHTML[i].id]" type="button" class="mui-btn mui-btn-red mui-media" style="border-radius: 50px; position: absolute;right: 5%;top: -2px;">按钮</button>
+							</p>
+						</div>
+					</a>
+				</li>`
+
+							}
+							document.getElementById('biaoZueng').innerHTML = BiaoZuenHTML
+							var XingQinngYeiiList = document.querySelectorAll('#biaoZueng .mui-media')
+							for (var j = 0 ; j < XingQinngYeiiList.length ; j++) {
+								(function(xingQing){
+									xingQing.addEventListener('tap',function(){
+
+										var id = this.getAttribute('XingQingID');
+
+										mui.openWindow('BiaoZuenXIngQing.html',{
+											extras:{id:id}
+										})
+
+									})
+								})(XingQinngYeiiList[j])
+							}
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				YeiMina()
+
+			})
+		</script>
+	</body>
+
+</html>
