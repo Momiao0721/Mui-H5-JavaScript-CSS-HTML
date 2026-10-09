@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="lbt1">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">lbt1</span>
+			</a>
+			<a class="mui-tab-item" id="lbt2">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">lbt2</span>
+			</a>
+			<a class="mui-tab-item" id="lbt3">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">lbt3</span>
+			</a>
+			<a class="mui-tab-item" id="lbt4">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">lbt4</span>
+			</a>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages:[{
+				  url:'lbt4.html',
+			      id:'lbt4',
+			      styles:{
+			        top:'0px',
+					bottom:'50px'
+			      },
+			      extras:{}
+				},
+				{
+				  url:'lbt3.html',
+				  id:'lbt3',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'lbt2.html',
+				  id:'lbt2',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'lbt1.html',
+				  id:'lbt1',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				}
+				]
+			})
+			mui.plusReady(function () {
+
+				function YeiMian(id){
+					plus.webview.getWebviewById(id).show()
+				}
+				document.getElementById('lbt4').addEventListener('tap',function(){
+					YeiMian('lbt4')
+				});
+				document.getElementById('lbt3').addEventListener('tap',function(){
+					YeiMian('lbt3')
+				});
+				document.getElementById('lbt2').addEventListener('tap',function(){
+					YeiMian('lbt2')
+				});
+				document.getElementById('lbt1').addEventListener('tap',function(){
+					YeiMian('lbt1')
+				});
+
+			})
+		</script>
+	</body>
+
+</html>

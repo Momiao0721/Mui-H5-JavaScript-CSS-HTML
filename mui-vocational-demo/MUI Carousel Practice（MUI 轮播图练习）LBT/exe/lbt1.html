@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">轮播图方法1</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="Yeilbt1"></div>
+				  
+				
+				
+				
+				
+				
+				
+				
+				
+
+			  <div class="mui-slider-indicator" id="Yei2lbt2"></div>
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function Lbt(){
+
+				mui.ajax(API_BASE + '/api/building/banner/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+							let lbtHTML = '';
+							let ltXia = '';
+							let LbtMiao = data.rows
+							lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="${API_BASE + data.rows[data.rows.length-1].imgUrl}">
+				</div>`
+							for (var i = 0 ; i < data.rows.length ; i++) {
+
+								lbtHTML += `<div class="mui-slider-item">
+					<img src="${API_BASE + data.rows[i].imgUrl}">
+				</div>`
+								ltXia += `<div class="mui-indicator"></div>`
+							}
+
+							lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="${API_BASE + data.rows[0].imgUrl}">
+				</div>`
+				document.getElementById('Yeilbt1').innerHTML = lbtHTML;
+				document.getElementById('Yei2lbt2').innerHTML = ltXia;
+						}
+						mui('.mui-slider').slider({interval:3000})
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				Lbt()
+			})
+		</script>
+	</body>
+
+</html>
