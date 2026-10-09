@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能1详情</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="XingQing">
+				
+			
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+
+				var id = plus.storage.getItem('XingQingID') || extra.id
+
+				console.log('拿到的 id =', id)
+
+				if (!id) {
+					mui.toast('未获取到id');
+					return;
+				}
+
+				function XiangQing(){
+
+				mui.ajax(API_BASE + '/api/public/projects/' + id,{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+							let XingQingHTML = '';
+							XingQingHTML += `
+			<img src="${API_BASE + data.data.imgUrl}" style="height: 200px;width: 100%;padding: 5px;">
+
+			<div id="">
+				<h5 style="font-size: 15PX; color: #000000;">${data.data.projectTitle}</h5>
+				<h5>${data.data.receivingInstitution}</h5>
+				<br>
+				<p>${data.data.introduce}</p>
+			</div>
+
+				<div style="position: absolute;bottom: 0; height: 40px;width: 100%;background-color: #f7f7f7;">
+					<p style="font-size: 20px;color: #000000; position: relative;top: 8px">人类:${data.data.feedbackNum}</p>
+					<button type="button" class="mui-btn mui-btn-blue" id="butt" style="position: absolute;right: 0;top: 1px;">按钮</button>
+
+				</div>`
+			document.getElementById('XingQing').innerHTML = XingQingHTML
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				XiangQing()
+
+				mui('#XingQing').on('tap','#butt',function(){
+					let result = confirm("确定要报名吗？",['确定，拒绝']);
+
+					if (result === true) {
+					  console.log("用户点击了确定");
+					} else {
+					  console.log("用户点击了取消");
+					}
+				})
+			})
+		</script>
+	</body>
+
+</html>
