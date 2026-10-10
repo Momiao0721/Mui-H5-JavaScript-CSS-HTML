@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能1</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="GongNeng1List">
+				
+				
+				
+			</ul>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LieBiao(){
+
+					mui.ajax(API_BASE + '/api/public/projects/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								let LieBiaoHTML = '';
+								let List = data.rows
+								for (var i= 0 ; i < data.rows.length ; i++) {
+								LieBiaoHTML += `<div style="padding: 10px;">
+						<img src="${API_BASE + List[i].imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body" style="position: relative;top: 10px;">
+							<h4>${List[i].projectTitle}</h4>
+							<h5>${List[i].receivingInstitution}</h5>
+							<p class="mui-ellipsis">${List[i].introduce}</p>
+						</div>
+						<hr >
+						<p style="position: relative;left: 5px;">人类：${List[i].feedbackNum}
+						<button type="button" class="mui-btn mui-btn-red mui-media" XingQingID="${List[i].id}" style="border-radius: 15px; position: absolute;right: 5%;top: -5px;">报名</button>
+						</p>
+				</div>`
+								}
+								document.getElementById('GongNeng1List').innerHTML = LieBiaoHTML;
+
+								var XingQinglist = document.querySelectorAll('#GongNeng1List .mui-media');
+								for (var j = 0 ; j < XingQinglist.length ; j++) {
+									(function(XingQing){
+										XingQing.addEventListener('tap',function(){
+
+									var id = this.getAttribute('XingQingID');
+									console.log('列表页拿到的 id =', id);
+									if (!id) return;
+									plus.storage.setItem('XingQingID', id);
+									mui.openWindow('GongNeng1XingQing.html',{
+										extras:{
+											id:id
+										}
+										})
+									})
+								})(XingQinglist[j])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+
+				var wv = plus.webview.currentWebview();
+				wv.addEventListener('show', function () {
+					LieBiao();
+				}, false);
+
+				LieBiao();
+			})
+		</script>
+	</body>
+
+</html>
