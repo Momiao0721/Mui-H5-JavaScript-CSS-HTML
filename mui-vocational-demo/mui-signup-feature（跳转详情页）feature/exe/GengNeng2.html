@@ -16,6 +16,7 @@
 			
 			<div id="GengNeng2List" style="padding: 5px;">
 				
+			
 				</div>
 		</div>
 		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
@@ -53,11 +54,31 @@
 			<hr >
 			<p>
 				人类：${data.rows[i].applyNum}
-				<button type="button" BaoMingID="${data.rows[i].id}" class="mui-btn mui-btn-blue" style="position: absolute;right: 0;border-radius: 50px; background-color: red;">按钮</button>
+				<button type="button" BaoMingID="${data.rows[i].id}" class="mui-btn mui-btn-blue mui-media" style="position: absolute;right: 0;border-radius: 50px; background-color: red;">按钮</button>
 			</p>
 			</div>`
 							}
 							document.getElementById('GengNeng2List').innerHTML = GongYoHUoDongHTML
+
+							var XingQingList = document.querySelectorAll('#GengNeng2List .mui-media')
+							for (var j = 0 ; j < XingQingList.length ; j++) {
+								(function(NeiRong){
+									NeiRong.addEventListener('tap',function(){
+
+										var id = this.getAttribute('BaoMingID')
+
+										console.log('报名ID:' , id)
+										if(!id)return;
+										plus.storage.setItem('BaoMingID',id)
+										mui.openWindow('XingQingYeiHTML.html',{
+											extras:{
+												id:id
+											}
+										})
+
+									})
+								})(XingQingList[j])
+							}
 						}
 					},
 					error:function(xhr,type,errorThrown){

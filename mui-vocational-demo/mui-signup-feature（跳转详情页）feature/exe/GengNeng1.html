@@ -46,7 +46,7 @@
 								let List = data.rows
 								for (var i= 0 ; i < data.rows.length ; i++) {
 								LieBiaoHTML += `<div style="padding: 10px;">
-						<img src="${API_BASE + List[i].imgUrl}" style="height: 200px; width: 100%;">
+						<img src="${API_BASE + List[i].imgUrl}" alt="${List[i].projectTitle}" style="height: 200px; width: 100%;">
 						<div class="mui-media-body" style="position: relative;top: 10px;">
 							<h4>${List[i].projectTitle}</h4>
 							<h5>${List[i].receivingInstitution}</h5>
