@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">时代楷模</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+			 
+				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+				<!-- <div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+				
+				<!-- 第四张 -->
+				<!-- <div class="mui-slider-item">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+				
+				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+				<!-- <div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+
+			  <div class="mui-slider-indicator" id="lbt2"></div>
+				<!-- <div class="mui-indicator"></div> -->
+			</div>
+			
+			
+			<!-- jGG -->
+			<div class="mui-card"style="border-radius: 10%;">
+				
+				<ul class="mui-table-view mui-grid-view mui-grid-9" id="jgg" >
+				
+					<!-- <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#" id="">
+								<img src="" style="height: 60px;">
+								<div class="mui-media-body">Home</div>
+						</a>
+					</li> -->
+			
+				</ul>
+			
+			</div>
+			
+			<p style="position: relative;left: 20px; font-size: 30px; color: red; ">
+				|<p style="position: relative;bottom: 30px; font-size: 20px; color: #000000; left: 30px;">楷模列表</p>
+			</p>
+			
+			<ul class="mui-table-view" style="bottom: 20px;" id="kmlb">
+				
+				<!-- <li class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="">
+						<div class="mui-media-body">
+							<h5></h5>
+							<h6></h6>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+					</a>
+				</li> -->
+			
+			</ul>
+			
+			<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="GengXing">更新</button>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				function lbt(){
+					
+				mui.ajax(http + '/api/building/banner/list',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if (data.code == 200) {
+							var lbtHTML = '';
+							var lbtXia = '';
+							lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+				</div> `
+				
+				for (var i = 0 ; i < data.rows.length ; i++) {
+					lbtHTML += `<div class="mui-slider-item">
+					<img src="${httpimg + data.rows[i].imgUrl}">
+				</div>`
+				lbtXia += `<div class="mui-indicator"></div>`
+				}
+				
+				lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="${httpimg + data.rows[0].imgUrl}">
+				</div>`
+				document.getElementById('lbt1').innerHTML = lbtHTML;
+				document.getElementById('lbt2').innerHTML = lbtXia
+						}
+						mui('.mui-slider').slider({interval : 3000})
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				}
+				lbt()
+				
+				function jgg(){
+					
+					var YeiMian = [{
+						name:'楷模列表',
+						id:'li_1',
+						img:'../img/kmlb.png'
+					},
+					{
+						name:'英雄故事',
+						id:'li_2',
+						img:'../img/yxgs.png'
+					},
+					{
+						name:'身边英雄',
+						id:'li_3',
+						img:'../img/sbyx.png'
+					},
+					{
+						name:'物资捐赠',
+						id:'li_4',
+						img:'../img/wzjz.png'
+					},
+					{
+						name:'数据分析',
+						id:'li_5',
+						img:'../img/wzjz.png'
+					},
+					{
+						name:'更多',
+						id:'li_6',
+						img:'../img/gd.png'
+					}
+					]
+					var jggHTML = '';
+					for (var i = 0 ; i < YeiMian.length ; i++) {
+						jggHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4">
+						<a href="#" id="${YeiMian[i].id}">
+								<img src="${YeiMian[i].img}" style="height: 60px;">
+								<div class="mui-media-body">${YeiMian[i].name}</div>
+						</a>
+					</li>`
+					}
+					document.getElementById('jgg').innerHTML = jggHTML
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					})
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					})
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					})
+					document.getElementById('li_4').addEventListener('tap',function(){
+						mui.openWindow('li_4.html')
+					})
+					document.getElementById('li_5').addEventListener('tap',function(){
+						mui.openWindow('li_5.html')
+					})
+					document.getElementById('li_6').addEventListener('tap',function(){
+						mui.openWindow('li_6.html')
+					})
+				}
+				jgg()
+				
+				function kmlb(){
+					
+					mui.ajax(http + '/api/model/list',{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								kmlbQuan = data.rows;
+								kmlbWuTiao = 5
+								GengXingkmlb()
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					function GengXingkmlb(){
+						
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						}
+						var kmlbHTML = '';
+						for (var i = 0 ; i < kmlbWuTiao ; i++) {
+							
+						kmlbHTML += `<li class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="${httpimg + kmlbQuan[i].imgUrl}">
+						<div class="mui-media-body">
+							<h5>${kmlbQuan[i].title}</h5>
+							<h6>${kmlbQuan[i].name}</h6>
+							<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+						</div>
+					</a>
+				</li>`
+						
+						}
+						document.getElementById('kmlb').innerHTML = kmlbHTML;
+						
+					}
+					document.getElementById('GengXing').addEventListener('tap',function(){
+						kmlbWuTiao += 5
+						GengXingkmlb();
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							this.innerHTML = '更新成功'
+						}
+					})
+				}
+				kmlb()
+			})
+		</script>
+	</body>
+
+</html>
