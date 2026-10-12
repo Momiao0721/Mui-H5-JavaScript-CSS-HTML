@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能4详情页</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="XiangQingYei" style="padding: 5px;">
+				<!-- <img src="../img/56eeee9b7cf007f3df2b4ac6027371df.jpg" style="height: 200px; width: 100%;">
+				
+				<div style="position: relative;top: 5px;">
+					<h4>标题：</h4>
+					<h5>时间：</h5>
+					<h5>JBANFANG</h5>
+					<p class="">123</p>
+				</div> -->
+			</div>
+			
+			<nav class="mui-bar mui-bar-tab" id="BaoMIngXiangiqng">
+				<!-- <p style="position: absolute;top: 35%;">报名人类：
+				</p>
+				<button type="button" class="mui-btn mui-btn-red" style="position: absolute;right: 0%;top: 1px;  height: 60px; width: 150px;">报名</button> -->
+			</nav>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BiaoMIngID') || extra.id
+				
+				console.log(id)
+				
+				function XianQing(){
+					
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+							
+						},
+						'Content-Type':'application/json',
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								
+								var XiangQingHTml = ''
+								var XiagnQIngBaomING = ''
+								XiangQingHTml += `<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%;">
+				
+				<div style="position: relative;top: 5px;">
+					<h4>${data.data.activityName}</h4>
+					<h5>${data.data.startEndTime}</h5>
+					<h5>${data.data.initiator}</h5>
+					<p>${data.data.activityDetail}</p>
+				</div>`
+							
+							XiagnQIngBaomING += `<p style="position: absolute;top: 35%;" id="RengLie">报名人类：${data.data.applyNum}
+				</p>
+				<button type="button" id="XiangQingBomingButton" class="mui-btn mui-btn-red XiangQingBomingButton" style="position: absolute;right: 0%;top: 1px;  height: 60px; width: 150px;">报名</button>`	
+							
+							document.getElementById('XiangQingYei').innerHTML = XiangQingHTml	
+							document.getElementById('BaoMIngXiangiqng').innerHTML = XiagnQIngBaomING
+							}
+							
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				XianQing()
+				
+				// 报名————————————————————————————————————————————————--
+				
+				mui('#BaoMIngXiangiqng').on('tap','.XiangQingBomingButton',function(){
+					
+					mui.confirm('你确定报名么','报名',['取消','确定'],function(e){
+						
+						e.index;
+						if (e.index !=1)return; 
+						
+						mui.ajax(http + '/api/activity/apply',{
+							data:{
+								activityId:id
+							},
+							headers:{
+							'Content-Type':'application/json',
+								'Authorization':localStorage.getItem('token')
+							},
+							
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							success:function(data){
+								if (data.code == 200) {
+									mui.toast('报名成功')
+									var btn = document.getElementById('XiangQingBomingButton')
+									btn.setAttribute('disabled','disabled')
+									btn.classList.add('mui-disabled')
+									GengXing()
+								}else{
+									mui.toast('报名失败')
+								}
+							},
+							error:function(xhr,type,errorThrown){
+								
+							}
+						});
+					})
+					
+				})
+						function GengXing(){
+							
+							mui.ajax(http + '/api/activity/' + id,{
+								data:{
+									
+								},
+								headers:{
+									'Authorization':localStorage.getItem('token')
+								},
+								
+								dataType:'json',//服务器返回json格式数据
+								type:'get',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								success:function(res){
+									if (res.code == 200 && res.data) {
+										document.getElementById('RengLie').innerHTML = '报名人类：' + res.data.applyNum;
+									}
+								},
+								error:function(xhr,type,errorThrown){
+									
+								}
+							});
+							
+						}
+						
+				
+			})
+		</script>
+	</body>
+
+</html>

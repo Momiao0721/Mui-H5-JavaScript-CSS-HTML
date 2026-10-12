@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能1详情</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="XingQing">
+				
+			<!-- <img src="" style="height: 200px;width: 100%;padding: 5px;">
+			
+			<div id="">
+				<h5 style="font-size: 15PX; color: #000000;">123</h5>
+				<h5>12</h5>
+				<br>
+				<p>13</p>
+			</div>
+				
+				<div style="position: absolute;bottom: 0; height: 40px;width: 100%;background-color: #f7f7f7;">
+					<p style="font-size: 20px;color: #000000; position: relative;top: 8px">人类:</p>
+					<button type="button" class="mui-btn mui-btn-blue" style="position: absolute;right: 0;top: 1px;">按钮</button>
+					
+				</div>
+				 -->
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				var extra = plus.webview.currentWebview().extra || {}
+				// 【改】storage 的 key 与列表页 setItem('XingQingID') 严格一致
+				var id = plus.storage.getItem('XingQingID') || extra.id
+				
+				// 【改】去掉引号，打印变量本身；直接运行本页时 extra 为 null，这里就能看出来
+				console.log('拿到的 id =', id)
+				
+				// 【改】加判空：拿不到 id 就别往下跑，避免后面全是 undefined
+				if (!id) {
+					mui.toast('未获取到id');
+					return;
+				}
+				
+				function XiangQing(){
+					
+				mui.ajax(http + '/api/public/projects/' + id,{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if (data.code == 200) {
+							let XingQingHTML = '';
+							XingQingHTML += `
+			<img src="${httpimg + data.data.imgUrl}" style="height: 200px;width: 100%;padding: 5px;">
+			
+			<div id="">
+				<h5 style="font-size: 15PX; color: #000000;">${data.data.projectTitle}</h5>
+				<h5>${data.data.receivingInstitution}</h5>
+				<br>
+				<p>${data.data.introduce}</p>
+			</div>
+				
+				<div style="position: absolute;bottom: 0; height: 40px;width: 100%;background-color: #f7f7f7;">
+					<p id="RenShu" style="font-size: 20px;color: #000000; position: relative;top: 8px">人类:${data.data.feedbackNum}</p>
+					<button type="button" class="mui-btn mui-btn-blue" id="butt" style="position: absolute;right: 0;top: 1px;">按钮</button>
+					
+				</div>`
+			document.getElementById('XingQing').innerHTML = XingQingHTML
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				}
+				XiangQing()
+				
+				// 报名——————————————————————————————————————————————————-
+				
+				mui('#XingQing').on('tap','#butt',function(){
+					mui.confirm('确定要报名吗？','提示',['取消','确定'],function(e){
+						if (e.index != 1) return;          // 点了取消，直接结束
+				
+						mui.ajax(http + '/api/activity/apply',{
+							data:{ activityId: id },               // 【确认】报名要传的活动 id 字段名
+							contentType : 'application/json' ,
+							headers:{ 'Authorization': localStorage.getItem('token') },
+							dataType:'json',
+							type:'post',
+							timeout:10000,
+							success:function(res){
+									console.log(JSON.stringify(res))
+								if (res.code == 200) {
+									mui.toast('报名成功');
+									// ① 禁用按钮，防止重复报名
+									var btn = document.getElementById('butt');
+									btn.setAttribute('disabled','disabled');
+									btn.classList.add('mui-disabled');
+									// ② 重新拉详情，刷新人数
+									refreshRenShu();
+								} else {
+									mui.toast(res.msg || '报名失败');
+								}
+							},
+							error:function(xhr,type){ console.log('报名失败：', type, xhr.status); }
+						});
+					});
+				});
+				
+				// 重新请求详情，只更新人数那一段
+				function refreshRenShu(){
+					mui.ajax(http + '/api/public/projects/' + id,{
+						headers:{ 'Authorization': localStorage.getItem('token') },
+						dataType:'json', type:'get', timeout:10000,
+						success:function(res){
+							if (res.code == 200) {
+								document.getElementById('RenShu').innerHTML = '人类:' + res.data.feedbackNum;
+							}
+						}
+					});
+				}
+			})
+		</script>
+	</body>
+
+</html>

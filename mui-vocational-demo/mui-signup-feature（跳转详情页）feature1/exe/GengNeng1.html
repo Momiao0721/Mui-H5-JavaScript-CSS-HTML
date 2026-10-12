@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能1</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="GongNeng1List">
+				
+				<!-- <div style="padding: 10px;">
+						<img src="" style="height: 200px; width: 100%;">
+						<div class="mui-media-body" style="position: relative;top: 10px;">
+							<h4>123</h4>
+							<h5>123</h5>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+						<hr >
+						<p style="position: relative;left: 5px;">人类：
+						<button type="button" class="mui-btn mui-btn-red" XingQingID="" style="border-radius: 15px; position: absolute;right: 5%;top: -5px;">报名</button>
+						</p>
+				</div> -->
+				
+			</ul>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				function LieBiao(){
+					
+					mui.ajax(http + '/api/public/projects/list',{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								let LieBiaoHTML = '';
+								let List = data.rows
+								for (var i= 0 ; i < data.rows.length ; i++) {
+								LieBiaoHTML += `<div style="padding: 10px;">
+						<img src="${httpimg + List[i].imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body" style="position: relative;top: 10px;">
+							<h4>${List[i].projectTitle}</h4>
+							<h5>${List[i].receivingInstitution}</h5>
+							<p class="mui-ellipsis">${List[i].introduce}</p>
+						</div>
+						<hr >
+						<p style="position: relative;left: 5px;">人类：${List[i].feedbackNum}
+						<button type="button" class="mui-btn mui-btn-red mui-media" XingQingID="${List[i].id}" style="border-radius: 15px; position: absolute;right: 5%;top: -5px;">报名</button>
+						</p>
+				</div>`
+								}
+								document.getElementById('GongNeng1List').innerHTML = LieBiaoHTML;
+								
+								// 【改】只让"报名"按钮跳转（mui-media 这个类就写在按钮上，选中的就是按钮）
+								var XingQinglist = document.querySelectorAll('#GongNeng1List .mui-media');
+								for (var j = 0 ; j < XingQinglist.length ; j++) {
+									(function(XingQing){
+										XingQing.addEventListener('tap',function(){
+											
+									// this 就是被点的那个按钮本身，直接取它身上的属性
+									var id = this.getAttribute('XingQingID');
+									console.log('列表页拿到的 id =', id);
+									if (!id) return;
+									plus.storage.setItem('XingQingID', id);   // 与详情页 getItem 配对
+									mui.openWindow('GongNeng1XingQing.html',{
+										extras:{
+											id:id
+										}
+										})
+									})
+								})(XingQinglist[j])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				// 【改】问题：原来这里只写死调用一次 LieBiao()，详情页报名后返回列表页，
+				//       列表页不会重新请求接口，DOM 还是旧的 —— 所以"人类"数字不变。
+				// 【改】解决：监听当前页面的 show 事件，每次这个页面被"显示出来"
+				//       （比如从详情页返回）就重新请求一次，数据就是最新的。
+				var wv = plus.webview.currentWebview();
+				wv.addEventListener('show', function () {
+					LieBiao();
+				}, false);
+
+				LieBiao();   // 【改】首次进入页面也先请求一次
+			})
+		</script>
+	</body>
+
+</html>

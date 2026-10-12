@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="XingQing">
+				
+			<!-- <div class="" style="padding: 10px;">
+					<img src="" style="height: 200px; width: 100%;">
+					<div class="mui-media-body">
+						<h4>123</h4>
+						<h5>123</h5>
+						<br>
+						<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+					</div>
+				</a>
+				<div id="BaoMing" style="position: absolute;bottom: 0;">
+					<p>人类
+					</p>
+				</div>
+					<button type="button" class="mui-btn mui-btn-red" BaoMIngButtonID='' style="position: absolute;right: 0;bottom: 0; height: 50px; width: 50%;">按钮</button>
+			</div>
+			 -->
+			 <nav class="mui-bar mui-bar-tab">
+			 	
+			 </nav>
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingID') || extra.id
+				
+				console.log(id)
+				
+				function XingQing(){
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+							
+						},
+						
+							'Content-Type':'application/json',
+						headers:{
+							
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if(data.code == 200){
+								
+								var XingQingHTML = '';
+								var XQq = data.data;
+								
+								XingQingHTML += `
+								
+									
+								<div class="" style="padding: 10px;">
+					<img src="${httpimg + XQq.imgUrl}" style="height: 200px; width: 100%;">
+					<div class="mui-media-body">
+						<h4>${XQq.activityName}</h4>
+						<h5>${XQq.initiator}</h5>
+						<br>
+						<p>${XQq.activityDetail}</p>
+					</div>
+				<nav class="mui-bar mui-bar-tab">
+					<div id="BaoMing" style="position: absolute;bottom: 0;">
+						<p id="RenShu">人类:${XQq.applyNum}
+						</p>
+					</div>
+						<button type="button" class="mui-btn mui-btn-red" id="BiaoMingButtom" BaoMIngButtonID='${XQq.id}' style="position: absolute;right: 0;bottom: 0; height: 50px; width: 50%;">按钮</button>
+				</nav>
+			</div>
+								`
+								document.getElementById('XingQing').innerHTML = XingQingHTML;
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+				}
+				XingQing()
+				
+				// 报名-——————————————————————————————————————————————————————————————-
+				
+				mui('#XingQing').on('tap','#BiaoMingButtom',function(){
+					
+					mui.confirm('你确定报名么','报名',['取消','确认'],function (e) {
+						e.index
+						if(e.index !=1)return;
+						mui.ajax(http + '/api/activity/apply',{
+							data:{
+								activityId:id
+							},
+							
+							headers:{
+								'Content-Type':'application/json',
+								'Authorization':localStorage.getItem('token')
+							},
+							
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							success:function(res){
+								console.log(JSON.stringify(res))
+								if(res.code == 200){
+									mui.toast('报名成功');
+									var but = document.getElementById('BiaoMingButtom');
+									but.setAttribute('disabled','disabled')
+									but.classList.add('mui-disabled')
+									refreshRenShu()
+								}else{
+									mui.toast(res.msg || '报名失败');
+								}
+							},
+							error:function(xhr,type,errorThrown){
+								mui.toast('网络错误')
+							}
+						});
+					},'div')
+						
+					function refreshRenShu(){
+						// 【改】id 是"活动id"，必须查活动接口（原来查的是 /public/projects/，项目表里没这个 id → res.data 为 undefined）
+						mui.ajax(http + '/api/activity/' + id,{
+							headers:{ 'Authorization': localStorage.getItem('token') },
+							dataType:'json', type:'get', timeout:10000,
+							success:function(res){
+								// 【改】加 res.data 判断，避免 data 为空时报 "Cannot read property of undefined"
+								if (res.code == 200 && res.data) {
+									// 【改】feedbackNum 是"反馈次数"，报名人数要用 applyNum
+									document.getElementById('RenShu').innerHTML = '人类:' + res.data.applyNum;
+								}
+							}
+						});
+					}
+					
+					
+				})
+			})
+		</script>
+	</body>
+
+</html>

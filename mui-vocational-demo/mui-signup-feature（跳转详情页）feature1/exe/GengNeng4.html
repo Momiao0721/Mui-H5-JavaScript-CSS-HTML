@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能页</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view" id="YeiMian">
+				
+				<!-- <li class="" style="padding: 8px;">
+						<img style="height: 200px; width: 100%;;" src="../img/56eeee9b7cf007f3df2b4ac6027371df.jpg">
+						<div class="mui-media-body">
+							<h4>S</h4>
+							<h5 style="font-size: 15px;">123123</h5>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+						<hr >
+						<p>
+						人类：	
+						<button type="button" class="mui-btn mui-btn-red mui-media" BiaoMIngID="" style="position: absolute;right: 2%; border-radius: 20px;">报名</button>
+						</p>
+				</li> -->
+				
+			</ul>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+			function yeiMian(){
+				
+				mui.ajax(http + '/api/activity/list',{
+					data:{
+						
+					},
+					'Content-Type':'application/json',
+					
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						
+						if (data.code == 200) {
+							
+							var yeimianHTML = '';
+							for (var i = 0 ; i < data.rows.length ; i++) {
+								
+								yeimianHTML += `<li class="" style="padding: 8px;">
+						<img style="height: 200px; width: 100%;" src="${httpimg + data.rows[i].imgUrl}">
+						<div class="mui-media-body">
+							<h4>${data.rows[i].activityName}</h4>
+							<h5 style="font-size: 15px;">${data.rows[i].initiator}</h5>
+							<p class="mui-ellipsis">${data.rows[i].activityDetail}</p>
+						</div>
+						<hr >
+						<p>
+						人类：${data.rows[i].applyNum}	
+						<button type="button" class="mui-btn mui-btn-red mui-media" BiaoMIngID="${data.rows[i].id}" style="position: absolute;right: 2%; border-radius: 20px;">报名</button>
+						</p>
+				</li>`
+								
+							}
+							document.getElementById('YeiMian').innerHTML = yeimianHTML
+							var XingQingYeiList = document.querySelectorAll('#YeiMian .mui-media')
+							
+							for (var j = 0 ; j < XingQingYeiList.length ; j++) {
+								
+								(function(XiangQing){
+									
+									XiangQing.addEventListener('tap',function(){
+										
+										var id = this.getAttribute('BiaoMIngID')
+										
+										console.log('BiaoMIngID=',id)
+										
+										if(!id)return;
+										
+										plus.storage.setItem('BiaoMIngID',id)
+										
+										mui.openWindow('GoneNengYei4listXiangQingYei.html',{
+											extras:{
+												id:id
+											}
+										})
+									})
+									
+								})(XingQingYeiList[j])
+								
+							}
+							
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+			}
+				// 【改】问题：原来只写死调用一次 yeiMian()，详情页报名后返回列表页，
+				//       列表页不会重新请求接口，DOM 还是旧的 → 人数不更新。
+				// 【改】解决：监听本页面的 show 事件，每次被"显示出来"
+				//       （从详情页返回、或切回本 tab）就重新请求一次。
+				var wv = plus.webview.currentWebview();
+				if (wv) {
+					wv.addEventListener('show', function () {
+						yeiMian();
+					}, false);
+				}
+
+				yeiMian();   // 【改】首次进入页面也先请求一次
+			})
+		</script>
+	</body>
+
+</html>
