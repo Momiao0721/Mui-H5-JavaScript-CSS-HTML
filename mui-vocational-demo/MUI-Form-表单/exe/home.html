@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">时代楷模</h1>
+		</header>
+		<div class="mui-content">
+
+			<div style="background-color: red;">
+				<marquee style="color: #DDDDDD;">学习雷锋同志，弘扬雷锋精神</marquee>
+			</div>
+
+			<div id="slider" class="mui-slider">
+				<div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+				<!-- <div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+
+
+				<!-- 第一张 -->
+				<!-- <div class="mui-slider-item">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+
+
+				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+				<!-- <div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="http:\/\/placehold.it\/400x300">
+				  </a>
+				</div> -->
+				<div class="mui-slider-indicator" id="lbt2"></div>
+
+				<!-- <div class="mui-indicator"></div> -->
+
+			</div>
+			
+			
+			<!-- jgg -->
+			<ul class="mui-table-view mui-grid-view mui-grid-9" id="jgg">
+				
+				
+				<!-- <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#" id="">
+						<img src="">
+						<div class="mui-media-body"></div>
+					</a>
+				</li> -->
+			
+			
+			</ul>
+			
+			
+			
+			<!-- kmlb -->
+			<ul class="mui-table-view" id="kmlb">
+				
+				<!-- <li class="mui-table-view-cell mui-media">
+					<a href="javascript:;">
+						<img class="mui-media-object mui-pull-left" src="">
+						<div class="mui-media-body">
+							<h4></h4>
+							<h5></h5>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+					</a>
+				</li> -->
+				
+			</ul>
+			<div>
+				<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="gx">更新</button>
+			</div>
+
+		</div>
+		<!-- <script src="../js/mui.min.js" type="text/javascript" charset="utf-8"></script> -->
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+
+				// lbt
+				function lbt() {
+					mui.ajax(http + '/api/building/banner/list', {
+						data: {
+
+						},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；
+						success: function(data) {
+							if (data.code == 200) {
+
+								var lbtHTML = '';
+								var lbtXia = '';
+								
+								lbtHTML += '<div class="mui-slider-item mui-slider-item-duplicate">' +
+									'<img src="' + httpimg + data.rows[data.rows.length-1].imgUrl + '">' +
+									'</div>'
+
+								for (var i = 0; i < data.rows.length; i++) {
+									lbtHTML += '<div class="mui-slider-item">' +
+										'<img src="' + httpimg + data.rows[i].imgUrl + '">' +
+										'</div>'
+
+									lbtXia += '<div class="mui-indicator"></div>'
+								}
+
+								lbtHTML += '<div class="mui-slider-item mui-slider-item-duplicate">' +
+									'<img src="' + httpimg + data.rows[0].imgUrl + '">' +
+									'</div>'
+
+								document.getElementById('lbt1').innerHTML = lbtHTML;
+								document.getElementById('lbt2').innerHTML = lbtXia;
+
+							}
+							mui('.mui-slider').slider({
+								interval: 2000
+							})
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+				}
+				lbt()
+				
+				function jgg(){
+					
+					var UeiMIan = [{
+						name:'楷模列表',
+						img:'../images/kmlb.png',
+						id:'li_1'
+					},
+					
+					{
+						name:'英雄故事',
+						img:'../images/yxgs.png',
+						id:'li_2'
+					},
+					
+					{
+						name:'身边英雄',
+						img:'../images/swbyx.png',
+						id:'li_3'
+					},
+					
+					{
+						name:'物资捐赠',
+						img:'../images/wzjz.png',
+						id:'li_4'
+					},
+					
+					{
+						name:'数据分析',
+						img:'../images/add.png',
+						id:'li_5'
+					},
+					
+					{
+						name:'更多',
+						img:'../images/add.png',
+						id:'li_6'
+					},
+					
+					]
+					var jggHTML = '';
+					for (var i = 0 ; i < UeiMIan.length ; i++) {
+						jggHTML += '<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">' +
+						'<a href="#" id="' + UeiMIan[i].id +'">' +
+						'<img src="' + UeiMIan[i].img +'">' +
+						'<div class="mui-media-body">' + UeiMIan[i].name + '</div>' +
+						'</a>' +
+						'</li>'
+					}
+					
+					document.getElementById('jgg').innerHTML = jggHTML
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					});
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					});
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					});
+					document.getElementById('li_4').addEventListener('tap',function(){
+						mui.openWindow('li_4.html')
+					});
+					document.getElementById('li_5').addEventListener('tap',function(){
+						mui.openWindow('li_5.html')
+					});
+					document.getElementById('li_6').addEventListener('tap',function(){
+						mui.openWindow('li_6.html')
+					});
+				}
+				jgg()
+				
+				function KMLB(){
+					mui.ajax(http + '/api/model/list',{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								kmlbQuan = data.rows
+								kmlbWuTiao = 5
+								GengXingKMLB()
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					function GengXingKMLB(){
+						if (kmlbWuTiao > kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						} 
+						var kmlbHTML = '';
+						for (var i = 0 ; i < kmlbWuTiao ; i++) {
+							kmlbHTML += '<li class="mui-table-view-cell mui-media">' +
+							'<a href="javascript:;">' +
+							'<img class="mui-media-object mui-pull-left" src="' + httpimg + kmlbQuan[i].imgUrl +'">' +
+							'<div class="mui-media-body">'+
+							'<h4>'  + kmlbQuan[i].title +'</h4>' +
+							'<h5>楷模名称：'  + kmlbQuan[i].name +'</h5>' +
+							'<p class="mui-ellipsis">'  + kmlbQuan[i].content +'</p>' +
+							'</div>' +
+							'</a>' +
+							'</li>'
+						}
+						document.getElementById('kmlb').innerHTML = kmlbHTML
+					}
+					document.getElementById('gx').addEventListener('tap',function(){
+						kmlbWuTiao += 5;
+						GengXingKMLB()
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							this.innerHTML = '加载完成'
+						}
+					})
+				}
+				KMLB()
+			})
+		</script>
+	</body>
+
+</html>

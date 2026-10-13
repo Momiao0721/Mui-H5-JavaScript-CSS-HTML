@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<!-- 列表容器：JS 通过 id="xxls" 往里面写渲染结果 -->
+			<ul class="mui-table-view" id="xxls">
+				
+			</ul>
+			<!-- 	
+				<div>
+					<button lsID="''"  type="button" class="mui-btn mui-btn-blue mui-btn-block TianJIaBiJie">添加笔记</button>
+					<button lsID="''" type="button" class="mui-btn mui-btn-blue mui-btn-block" id="BianJiBiji">编辑笔记</button>
+					<button lsID="''" type="button" class="mui-btn mui-btn-blue mui-btn-block SanCuBiJi">删除笔记</button>
+				</div> -->
+				
+		</div>
+		<!-- <script src="../js/mui.min.js" type="text/javascript" charset="utf-8"></script> -->
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    function xxls(){
+					// 学习历史列表
+					mui.ajax(http + '/api/history/list',{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								var xxlsNieRong = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+								xxlsNieRong += '<ul class="mui-table-view">' +
+								'<li class="mui-table-view-cell mui-media">' +
+								'<a href="javascript:;">' +
+								'<h5 style="font-size: 20px;">标题:' + data.rows[i].title +'</h5>' +
+								'<p class="mui-ellipsis">内容：' + data.rows[i].content + '</p>' +
+								'</a>' +
+								'</li>' +
+								'</ul>'
+								}
+								document.getElementById('xxls').innerHTML = xxlsNieRong
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				xxls()   // 定义完要调用，否则列表不会渲染
+			})
+		</script>
+	</body>
+
+</html>

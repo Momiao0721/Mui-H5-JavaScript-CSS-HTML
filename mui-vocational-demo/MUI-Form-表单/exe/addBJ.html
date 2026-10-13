@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>添加笔记</title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<!-- ═══════════════════════════════════════════════════════════
+		     任务2 · 添加笔记（表单页）
+		     POST /api/history/note?studyHistoryId=x
+		     body: { noteTitle, noteContent, studyHistoryId }
+		     ───────────────────────────────────────────────────────────
+		     ★ 为什么添加笔记用 studyHistoryId，不用 noteId？
+		       因为【笔记还不存在】，noteId 根本没值 ——
+		       只能告诉服务器"我要给第 X 条学习历史加一篇笔记"。
+		       （到了"编辑"的时候笔记已经有了，才改用 noteId）
+		     ═══════════════════════════════════════════════════════════
+		-->
+		<style type="text/css">
+			* {
+				touch-action: pan-y;
+			}
+
+			.mui-input-row label {
+				width: 20%;
+			}
+
+			.mui-input-row label~input,
+			.mui-input-row label~textarea {
+				width: 80%;
+				border: 1px solid #cccccc;
+				border-radius: 5px;
+				margin-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">添加笔记</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-card">
+
+				<div class="mui-card-content" style="padding: 10px;">
+					<div class="mui-input-row">
+						<label>标题</label>
+						<input type="text" id="title" class="mui-input-clear" placeholder="请输入笔记标题">
+					</div>
+					<div class="mui-input-row">
+						<label>内容</label>
+						<textarea rows="6" id="content" placeholder="请输入笔记内容"></textarea>
+					</div>
+				</div>
+
+				<div id="tj" class="mui-card-footer">
+					<a class="mui-card-link" style="margin: -10px auto;">提 交</a>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="../js/http.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function () {
+					var v = plus.webview.currentWebview().opener();
+					mui.fire(v, 'refresh');
+					return true;
+				}
+			})
+
+			mui.plusReady(function () {
+
+				// ==========================================================
+				// ★ 接收父页面传来的参数
+				//   父页面写的是：extras: { xxLsId: xxLsId }
+				//   这里就用 currentWebview().xxLsId 取 —— 键名必须一模一样
+				// ==========================================================
+				var lsId = plus.webview.currentWebview().xxLsId;
+
+				console.log('收到 xxLsId = ' + lsId);
+
+				mui('#tj').on('tap', '.mui-card-link', function () {
+
+					var title = document.getElementById('title').value;
+					var content = document.getElementById('content').value;
+
+					if (content == '') { mui.toast('笔记内容不能为空'); return; }
+					if (lsId == null || lsId == '') { mui.toast('缺少学习历史id'); return; }
+
+					mui.ajax(http + '/api/history/note?studyHistoryId=' + lsId, {
+						data: {
+							noteTitle: title,
+							noteContent: content,
+							studyHistoryId: lsId       // ★ 添加时只能靠它定位
+						},
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'post',              // ★ 新增用 POST
+						timeout: 10000,
+						success: function (data) {
+							if (data.code == 200) {
+								mui.toast('添加成功');
+								mui.back();        // 返回 → 父页面自动刷新
+							} else {
+								mui.toast(data.msg || '添加失败');
+							}
+						},
+						error: function (xhr, type, errorThrown) {
+							mui.toast('网络异常：' + type);
+						}
+					});
+				})
+			})
+		</script>
+	</body>
+
+</html>

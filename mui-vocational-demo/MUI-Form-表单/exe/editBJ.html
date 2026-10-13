@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>编辑笔记</title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<!-- ═══════════════════════════════════════════════════════════
+		     任务2 · 编辑笔记（表单页）
+		     PUT /api/history/note?studyHistoryId=x
+		     body: { noteId, noteTitle, noteContent }
+		     ───────────────────────────────────────────────────────────
+		     ★ 这个页面就两件事：
+		       ① 把父页面传来的旧值【预填】进输入框  ← 编辑的灵魂
+		       ② 提交时用 PUT（不是 POST）
+		     ═══════════════════════════════════════════════════════════
+		-->
+		<style type="text/css">
+			* {
+				touch-action: pan-y;
+			}
+
+			.mui-input-row label {
+				width: 20%;
+			}
+
+			.mui-input-row label~input,
+			.mui-input-row label~textarea {
+				width: 80%;
+				border: 1px solid #cccccc;
+				border-radius: 5px;
+				margin-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">编辑笔记</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-card">
+
+				<div class="mui-card-content" style="padding: 10px;">
+					<div class="mui-input-row">
+						<label>标题</label>
+						<input type="text" id="title" class="mui-input-clear" placeholder="请输入笔记标题">
+					</div>
+					<div class="mui-input-row">
+						<label>内容</label>
+						<textarea rows="6" id="content" placeholder="请输入笔记内容"></textarea>
+					</div>
+				</div>
+
+				<div id="tj" class="mui-card-footer">
+					<a class="mui-card-link" style="margin: -10px auto;">保 存</a>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="../js/http.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function () {
+					var v = plus.webview.currentWebview().opener();
+					mui.fire(v, 'refresh');
+					return true;
+				}
+			})
+
+			mui.plusReady(function () {
+
+				// ==========================================================
+				// ★① 接收父页面传来的参数，并【预填】到输入框
+				//     父页面写的是：
+				//       extras: { bjId, bjTitle, bjContent, xxLsId }
+				// ==========================================================
+				var zz = plus.webview.currentWebview();
+
+				var bjId = zz.bjId;             // 笔记id（提交时要用）
+				var xxLsId = zz.xxLsId;         // 学习历史id（本地 Mock 要用）
+
+				// ★★ 这两行就是"编辑"和"添加"最大的区别 ——
+				//    把旧值塞进输入框，用户打开就能看见原来的内容，直接改
+				document.getElementById('title').value = zz.bjTitle;
+				document.getElementById('content').value = zz.bjContent;
+
+				mui('#tj').on('tap', '.mui-card-link', function () {
+
+					var bjTitle = document.getElementById('title').value;
+					var bjContent = document.getElementById('content').value;
+
+					if (bjContent == '') { mui.toast('笔记内容不能为空'); return; }
+
+					// ★ URL 上带 studyHistoryId、body 里带 noteId —— 两边都照顾到：
+					//   接口文档规定 PUT 要 noteId；
+					//   本地 Mock 是按 studyHistoryId 找记录的（mock_server.py 第 343 行）
+					mui.ajax(http + '/api/history/note?studyHistoryId=' + xxLsId, {
+						data: {
+							noteId: bjId,          // ★ 文档规定 PUT 要这个
+							noteTitle: bjTitle,
+							noteContent: bjContent
+						},
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'PUT',               // ★ 增=POST  改=PUT  删=DELETE
+						timeout: 10000,
+						success: function (data) {
+							if (data.code == 200) {
+								mui.toast('修改成功');
+								mui.back();        // 返回 → 父页面自动刷新
+							} else {
+								mui.toast(data.msg || '修改失败');
+							}
+						},
+						error: function (xhr, type, errorThrown) {
+							mui.toast('网络异常：' + type);
+						}
+					});
+				})
+			})
+		</script>
+	</body>
+
+</html>

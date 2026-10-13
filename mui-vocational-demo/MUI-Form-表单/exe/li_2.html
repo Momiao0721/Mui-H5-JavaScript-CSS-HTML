@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>学习心得</title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<!-- ═══════════════════════════════════════════════════════════
+		     任务2：实现学习心得功能 · 【单文件版】
+		     ───────────────────────────────────────────────────────────
+		     跟老师那份的区别：
+		       老师版 = 4 个文件（心得页 + addGY.html + addBJ.html + editBJ.html）
+		       本  版 = 1 个文件，新增/编辑全用 mui.prompt 弹框完成
+		                （考试更省事：不用来回跳页，也不用传参）
+		     ───────────────────────────────────────────────────────────
+		     用到的接口（中慧）：
+		       GET    /api/testimonials/listByDesc   感言列表
+		       POST   /api/testimonials              新增感言
+		       DELETE /api/testimonials/{id}         删除感言
+		       GET    /api/history/list              学习历史列表
+		       POST   /api/history/note              添加笔记
+		       PUT    /api/history/note              编辑笔记
+		       DELETE /api/history/note              删除笔记
+		     ═══════════════════════════════════════════════════════════
+		-->
+		<style>
+			* {
+				touch-action: pan-y;
+			}
+
+			.mui-card {
+				margin: 0 0 0.625rem 0;
+				border-radius: 0.625rem;
+			}
+
+			.mui-bar-nav {
+				box-shadow: none;
+			}
+
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after {
+				height: 0px;
+			}
+
+			/* 老师的 .mui-control-content{height:473px} 我删了 ——
+			   写死高度会让内容多的那栏被裁掉，用 MUI 默认的自适应更好 */
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="background-color: white;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" style="font-weight: bolder;">学习心得</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<!-- ══════════ ① 两个 Tab ══════════ -->
+			<div style="background-color: white;margin-bottom: 5px;">
+				<div class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-negative">
+					<a class="mui-control-item gy mui-active" href="#item1">学习感言</a>
+					<a class="mui-control-item ls" href="#item2">学习历史</a>
+				</div>
+			</div>
+
+			<div style="width: 100%;padding: 0.625rem;">
+
+				<!-- ══════════ ② Tab1：学习感言 ══════════ -->
+				<div id="item1" class="mui-control-content mui-active">
+					<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="addGY"
+						style="margin-bottom: 10px;border-radius: 1.875rem;">＋ 新建感言</button>
+					<ul id="gy" class="mui-table-view" style="background-color: #efeff4;">
+						<!-- JS 写入点 -->
+					</ul>
+				</div>
+
+				<!-- ══════════ ③ Tab2：学习历史 ══════════ -->
+				<div id="item2" class="mui-control-content">
+					<ul class="mui-table-view" style="background-color: #efeff4;" id="ls">
+						<!-- JS 写入点 -->
+					</ul>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="../js/http.js"></script>
+		<script src="../js/mui.js"></script>
+
+		<script type="text/javascript">
+			mui.init();
+
+			mui.plusReady(function () {
+
+				// ═══════════════════════════════════════════════════════
+				// 一、学习感言列表
+				// ═══════════════════════════════════════════════════════
+				function ganyan() {
+					mui.ajax(http + '/api/testimonials/listByDesc', {
+						data: {},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'get',
+						timeout: 5000,
+						success: function (data) {
+							if (data.code != 200) return;      // ★ 老师的没判断，加一句更稳
+
+							var gyCon = '';
+							for (var i = 0; i < data.rows.length; i++) {
+								// ★ 用【模板字符串】反引号，比一行行拼 + 好读
+								//   ${xxx} 就是变量占位符
+								gyCon += `<li class="mui-table-view-cell"
+									style="background-color:#FFFFFF;border-radius:0.625rem;margin-bottom:10px;">
+									<div class="mui-slider-right mui-disabled">
+										<a class="mui-btn mui-btn-red delGY" gyId="${data.rows[i].id}">删除</a>
+									</div>
+									<div class="mui-slider-handle">
+										<h4 class="mui-ellipsis" style="font-size:14px;">${data.rows[i].title}</h4>
+										<p class="mui-h6 mui-ellipsis-2">${data.rows[i].content}</p>
+									</div>
+								</li>`;
+							}
+							document.getElementById('gy').innerHTML = gyCon;
+						},
+						error: function (xhr, type, errorThrown) {
+							mui.toast('感言加载失败：' + type);
+						}
+					});
+				}
+				ganyan();
+
+				// ═══════════════════════════════════════════════════════
+				// 二、删除感言（左滑 → 点删除 → 确认）
+				//     DELETE /api/testimonials/{id}
+				// ★★ 老师把这三个绑定写在 ajax 的 success 里了 ——
+				//     每次刷新列表都会【再绑一层】，点一次会触发好几次。
+				//     所以我把它们全部挪到函数【外面】，只绑一次。
+				// ═══════════════════════════════════════════════════════
+				mui('#gy').on('tap', '.delGY', function () {
+
+					var li = this.parentNode.parentNode;          // 这一条 <li>，删成功后直接从页面拿掉
+					var gyId = this.getAttribute('gyId');         // this = 被点的删除按钮
+
+					// ★ 按钮数组 ['取消','确认'] → index 1 就是"确认"
+					mui.confirm('你确认要删除本条感言记录吗？', '删除感言', ['取消', '确认'], function (e) {
+						if (e.index == 1) {
+							mui.ajax(http + '/api/testimonials/' + gyId, {
+								data: {},
+								headers: {
+									// ★ 不是 GET 就给 Content-Type
+									'Content-Type': 'application/json',
+									'Authorization': localStorage.getItem('token')
+								},
+								dataType: 'json',
+								type: 'DELETE',
+								timeout: 5000,
+								success: function (data) {
+									if (data.code == 200) {
+										mui.toast('删除成功');
+										// ★ 直接把这一条从页面移除，比重新拉整个列表快
+										li.parentNode.removeChild(li);
+									} else {
+										mui.toast(data.msg || '删除失败');
+									}
+								},
+								error: function (xhr, type, errorThrown) {
+									mui.toast('网络异常：' + type);
+								}
+							});
+						} else {
+							// 点了"取消"→ 把滑开的这一条收回去
+							mui.swipeoutClose(li);
+						}
+					});
+				});
+
+				// ═══════════════════════════════════════════════════════
+				// 三、新增感言
+				//     ★ 老师是跳转到 addGY.html 去填；
+				//       单文件版连弹两次输入框，原地搞定
+				//     POST /api/testimonials   body:{ title, content }
+				// ═══════════════════════════════════════════════════════
+				document.getElementById('addGY').addEventListener('tap', function () {
+
+					// ★ mui.prompt 参数：提示, 预填内容, 标题, 按钮数组, 回调
+					//   第 2 个传 '' = 输入框是空的
+					mui.prompt('请输入感言标题', '', '新建感言', ['取消', '下一步'], function (y) {
+						if (y.value == '') return;                 // ★ 没打字就退出，别提交空的
+						var xinBiaoTi = y.value;
+
+						mui.prompt('请输入感言内容', '', '新建感言', ['取消', '保存'], function (y2) {
+							// ★ 嵌套两层时回调参数要换名字（y → y2），
+							//   不然内层会盖住外层
+							if (y2.value == '') return;
+
+							mui.ajax(http + '/api/testimonials', {
+								data: {
+									title: xinBiaoTi,
+									content: y2.value
+								},
+								headers: {
+									'Content-Type': 'application/json',
+									'Authorization': localStorage.getItem('token')
+								},
+								dataType: 'json',
+								type: 'post',
+								timeout: 10000,
+								success: function (data) {
+									if (data.code == 200) {
+										mui.toast('新建成功');
+										ganyan();          // ★ 重新拉列表 = 刷新
+									} else {
+										mui.toast(data.msg || '新建失败');
+									}
+								},
+								error: function (xhr, type, errorThrown) {
+									mui.toast('网络异常：' + type);
+								}
+							});
+						});
+					});
+				});
+
+				// ═══════════════════════════════════════════════════════
+				// 四、学习历史列表
+				//     GET /api/history/list
+				//     ★ 老师写的是 'history/list?userId=1' ——
+				//       接口文档里没这个参数，我去掉了
+				// ═══════════════════════════════════════════════════════
+				function lishi() {
+					mui.ajax(http + '/api/history/list', {
+						data: {},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'get',
+						timeout: 10000,
+						success: function (data) {
+							if (data.code != 200) return;
+
+							var lsCon = '';
+							for (var i = 0; i < data.rows.length; i++) {
+
+								var item = data.rows[i];
+								var noteHTML = '';
+
+								if (item.wstudyNote == null) {
+									// ---------- 没有笔记：只给「添加笔记」 ----------
+									noteHTML = `
+									<div class="mui-card-footer">
+										<a class="mui-card-link mui-icon mui-icon-compose addBJ"
+											style="font-size:20px;margin:-10px auto;color:#c2050f;"
+											xxLsId="${item.id}">
+											<span style="font-size:12px;">添加笔记</span>
+										</a>
+									</div>`;
+								} else {
+									// ---------- 已有笔记：显示笔记 + 删除 + 编辑 ----------
+									noteHTML = `
+									<div style="width:100%;height:1px;background-color:#c8c7cc;"></div>
+									<div style="padding:10px;position:relative;">
+										<span>学习笔记</span>
+										<a class="mui-card-link delBJ"
+											style="color:#c2050f;position:absolute;right:10px;font-size:12px;"
+											BjId="${item.wstudyNote.noteId}" xxLsId="${item.id}">删除</a>
+										<div style="width:100%;background-color:#f6f6f6;padding:10px;border-radius:5px;">
+											${item.wstudyNote.noteContent}
+										</div>
+									</div>
+									<div class="mui-card-footer">
+										<a class="mui-card-link mui-icon mui-icon-compose editBJ"
+											style="font-size:20px;margin:-10px auto;color:#eda645;"
+											BjId="${item.wstudyNote.noteId}"
+											bjTitle="${item.wstudyNote.noteTitle}"
+											bjContent="${item.wstudyNote.noteContent}"
+											xxLsId="${item.id}">
+											<span style="font-size:12px;">编辑笔记</span>
+										</a>
+									</div>`;
+								}
+
+								lsCon += `
+								<li>
+									<div class="mui-card">
+										<div class="mui-card-content">
+											<div class="mui-card-content-inner">
+												<h4 class="mui-ellipsis" style="font-size:14px;">${item.title}</h4>
+												<p>${item.issueTime}</p>
+												<p class="mui-h6 mui-ellipsis-2">${item.content}</p>
+											</div>
+										</div>
+										${noteHTML}
+									</div>
+								</li>`;
+							}
+							document.getElementById('ls').innerHTML = lsCon;
+						},
+						error: function (xhr, type, errorThrown) {
+							mui.toast('学习历史加载失败：' + type);
+						}
+					});
+				}
+				lishi();
+
+				// ═══════════════════════════════════════════════════════
+				// 五、添加笔记
+				//     ★ 老师是跳到 addBJ.html；
+				//       单文件版用弹框，连传参都省了
+				//     POST /api/history/note?studyHistoryId=x
+				// ═══════════════════════════════════════════════════════
+				mui('#ls').on('tap', '.addBJ', function () {
+
+					var xxLsId = this.getAttribute('xxLsId');      // 学习历史 id
+
+					mui.prompt('请输入笔记内容', '', '添加笔记', ['取消', '保存'], function (y) {
+						if (y.value == '') return;
+
+						mui.ajax(http + '/api/history/note?studyHistoryId=' + xxLsId, {
+							data: {
+								studyHistoryId: xxLsId,
+								noteContent: y.value
+							},
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': localStorage.getItem('token')
+							},
+							dataType: 'json',
+							type: 'post',
+							timeout: 10000,
+							success: function (data) {
+								if (data.code == 200) {
+									mui.toast('添加成功');
+									lishi();
+								} else {
+									mui.toast(data.msg || '添加失败');
+								}
+							},
+							error: function (xhr, type, errorThrown) {
+								mui.toast('网络异常：' + type);
+							}
+						});
+					});
+				});
+
+				// ═══════════════════════════════════════════════════════
+				// 六、编辑笔记
+				//     ★ 老师是跳到 editBJ.html，靠 extras 传 bjId/bjTitle/bjContent；
+				//       单文件版直接在弹框里预填旧内容
+				//     PUT /api/history/note
+				// ═══════════════════════════════════════════════════════
+				mui('#ls').on('tap', '.editBJ', function () {
+
+					var bjId = this.getAttribute('BjId');          // 笔记 id
+					var bjContent = this.getAttribute('bjContent'); // 旧笔记内容
+					var xxLsId = this.getAttribute('xxLsId');      // 学习历史 id
+
+					// ★★ 第 2 个参数传【旧内容】→ 弹框输入框里就预填着原笔记，直接改
+					//    这是"编辑"和"添加"唯一的区别（添加传 ''）
+					mui.prompt('修改笔记内容', bjContent, '编辑笔记', ['取消', '保存'], function (y) {
+						if (y.value == '') return;
+
+						// ★ 地址带 studyHistoryId、body 带 noteId —— 两边都照顾到：
+						//   文档规定 PUT 要 noteId；本地 Mock 是按 studyHistoryId 找的
+						mui.ajax(http + '/api/history/note?studyHistoryId=' + xxLsId, {
+							data: {
+								noteId: bjId,
+								noteContent: y.value
+							},
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': localStorage.getItem('token')
+							},
+							dataType: 'json',
+							type: 'put',                      // ★ 增=post 改=put 删=delete
+							timeout: 10000,
+							success: function (data) {
+								if (data.code == 200) {
+									mui.toast('修改成功');
+									lishi();
+								} else {
+									mui.toast(data.msg || '修改失败');
+								}
+							},
+							error: function (xhr, type, errorThrown) {
+								mui.toast('网络异常：' + type);
+							}
+						});
+					});
+				});
+
+				// ═══════════════════════════════════════════════════════
+				// 七、删除笔记
+				//     DELETE /api/history/note?noteId=x&studyHistoryId=y
+				//     ★ 老师这里写了 location.reload() 并自己标了「有BUG」——
+				//       整页 reload 会闪一下白屏、还会丢 Tab 状态。
+				//       换成 lishi() 局部刷新就对了。
+				// ═══════════════════════════════════════════════════════
+				mui('#ls').on('tap', '.delBJ', function () {
+
+					var bjId = this.getAttribute('BjId');          // 笔记 id
+					var xxLsId = this.getAttribute('xxLsId');      // 学习历史 id
+
+					mui.confirm('确认删除这条笔记吗？', '删除笔记', ['取消', '确认'], function (e) {
+						if (e.index == 1) {
+							// ★ 文档规定 DELETE 要 noteId + studyHistoryId，两个都带上
+							mui.ajax(http + '/api/history/note?noteId=' + bjId +
+								'&studyHistoryId=' + xxLsId, {
+									data: {},
+									headers: {
+										'Content-Type': 'application/json',
+										'Authorization': localStorage.getItem('token')
+									},
+									dataType: 'json',
+									type: 'DELETE',
+									timeout: 5000,
+									success: function (data) {
+										if (data.code == 200) {
+											mui.toast('删除成功');
+											lishi();           // ★ 局部刷新（不是 location.reload）
+										} else {
+											mui.toast(data.msg || '删除失败');
+										}
+									},
+									error: function (xhr, type, errorThrown) {
+										mui.toast('网络异常：' + type);
+									}
+								});
+						}
+					});
+				});
+
+			});
+		</script>
+	</body>
+
+</html>

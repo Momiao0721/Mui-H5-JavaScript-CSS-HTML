@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>添加感言</title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<!-- ═══════════════════════════════════════════════════════════
+		     任务2 · 新增感言（表单页）
+		     POST /api/testimonials    body: { title, content }
+		     ───────────────────────────────────────────────────────────
+		     三个要点（每个表单页都有）：
+		       ① 提交前判空
+		       ② headers 里必须给 Content-Type
+		       ③ 返回前用 mui.fire 通知父页面刷新
+		     ═══════════════════════════════════════════════════════════
+		-->
+		<style type="text/css">
+			* {
+				touch-action: pan-y;
+			}
+
+			/* 让"标题"两字占 20%，输入框占 80% */
+			.mui-input-row label {
+				width: 20%;
+			}
+
+			.mui-input-row label~input,
+			.mui-input-row label~textarea {
+				width: 80%;
+				border: 1px solid #cccccc;
+				border-radius: 5px;
+				margin-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<!-- mui-action-back 加上就自动返回，不用写 JS -->
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">添加感言</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-card">
+
+				<div class="mui-card-content" style="padding: 10px;">
+					<div class="mui-input-row">
+						<label>标题</label>
+						<input type="text" id="title" class="mui-input-clear" placeholder="请输入标题">
+					</div>
+					<div class="mui-input-row">
+						<label>内容</label>
+						<textarea rows="6" id="content" placeholder="请输入内容"></textarea>
+					</div>
+				</div>
+
+				<div id="tj" class="mui-card-footer">
+					<a class="mui-card-link" style="margin: -10px auto;">提 交</a>
+				</div>
+
+			</div>
+		</div>
+
+		<script src="../js/http.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+
+			// ============================================================
+			// ★★ 这一段是"子页面通知父页面刷新"的关键
+			//   beforeback：按返回键【之前】执行
+			//   opener()   ：问"谁打开了我"→ 拿到父页面的 webview
+			//   mui.fire   ：给父页面发一个叫 refresh 的自定义事件
+			//   return true：★ 必须返回 true，否则这次返回会被取消
+			// ============================================================
+			mui.init({
+				beforeback: function () {
+					var v = plus.webview.currentWebview().opener();
+					mui.fire(v, 'refresh');
+					return true;
+				}
+			})
+
+			mui.plusReady(function () {
+
+				mui('#tj').on('tap', '.mui-card-link', function () {
+
+					var title = document.getElementById('title').value;
+					var content = document.getElementById('content').value;
+
+					// ---- ① 判空（规程一般都会要求"输入不能为空"）----
+					if (title == '') { mui.toast('标题不能为空'); return; }
+					if (content == '') { mui.toast('内容不能为空'); return; }
+
+					mui.ajax(http + '/api/testimonials', {
+						data: {
+							title: title,
+							content: content
+						},
+						headers: {
+							// ★★ 不是 GET 就必须给这个，否则 MUI 会发成
+							//    title=xx&content=yy 的表单格式 → 考场后端 415
+							'Content-Type': 'application/json',
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'post',          // ★ 新增用 POST
+						timeout: 10000,
+						success: function (data) {
+							if (data.code == 200) {
+								mui.toast('新增成功');
+								mui.back();    // 返回 → 会触发上面的 beforeback → 父页面刷新
+							} else {
+								mui.toast(data.msg || '新增失败');
+							}
+						},
+						error: function (xhr, type, errorThrown) {
+							mui.toast('网络异常：' + type);
+						}
+					});
+				})
+			})
+		</script>
+	</body>
+
+</html>
