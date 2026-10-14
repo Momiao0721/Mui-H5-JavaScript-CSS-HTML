@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">数据分析</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="TiaoXingTu" style="height: 200px; width: 100%; "></div>
+			<div id="ZeiXianTu" style="height: 200px; width: 100%;"></div>
+			<div id="BingTu" style="height: 200px; width: 100%;"></div>
+			
+		</div>
+		<script src="../js/echarts.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    var TiaoXing = echarts.init(document.getElementById('TiaoXingTu'))
+				var ZeiXing = echarts.init(document.getElementById('ZeiXianTu'))
+				var Bing = echarts.init(document.getElementById('BingTu'))
+				mui.ajax(http + '/api/data/comment/list_2',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(res){
+						if (res.code != 200) return;
+						// 柱状图基础配置
+						var d = res.data;
+						var lineOption = {
+						    color:['#ffffff','#ff0004'],//柱状图颜色
+						    legend: { // 展示系列的标记
+						        data: ['女性评论数统计', '男性评论数统计'],
+						        left:"center",
+						    },
+						    grid:{  
+						        show:true
+						    },
+						    xAxis: {
+						        type: 'category',
+						        data: d.name,
+						        splitLine:{ show: true }, //x轴网格线
+						    },
+						    yAxis: {
+						        type: 'value',
+						        min:0,
+						    },
+							
+						    series: [{
+						        name: '女性评论数统计',
+						        data: d.woman,//柱状图1的y轴数据
+						        type: 'bar'
+						    },
+						    {
+						        name: '男性评论数统计',
+						        data: d.man,//柱状图2的y轴数据
+						        type: 'bar'
+						    }
+						  ]
+						}
+						TiaoXing.setOption(lineOption)
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				
+				mui.ajax(http + '/api/read/book/list_1',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(res){
+						if (res.code != 200) return;
+						var d = res.data;
+						// 折线图基础配置
+						var lineOption = {
+						    color:["#ffffff"],
+						    legend:{
+						        data:['所有用户阅读书籍数量变化趋势'],
+						        left: 'center',
+						    },
+						    xAxis: {
+						        splitLine: { 
+						            show: true
+						        },
+						        type: 'category',
+						        data: d.name
+						    },
+						    yAxis: {
+						        min: 0,// 最小值
+						        type: 'value'
+						    },
+						    series: [{
+						        name:'所有用户阅读书籍数量变化趋势',
+						        data: d.value,// y轴坐标
+						        type: 'line'
+						    }]
+						}
+						ZeiXing.setOption(lineOption)
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				
+				mui.ajax(http + '/api/read/book/list/type_1',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if(data.code != 200)return;
+						var pieData = [];
+						for(var i=0;i<data.data.data.length;i++){
+							pieData[i] = {
+								name:data.data.name[i],
+								value:data.data.count[i]
+							}
+						}
+						
+						var option = {
+							color: ["#5470c6","#73c0de","#91cc75","#fac858","#fc8452","#ee6666"],
+							legend:{
+								data:data.data.name,
+								bottom:'bottom',
+								icon:'rect',
+								itemWidth:10,
+								itemHeight:10,
+								itemStyle:{
+									// 没起作用
+									borderWidth:2,
+									borderColor:'#fff'
+								},
+								width:240
+							},
+							series:[{
+								name:data.data.name,
+								type:'pie',
+								data:pieData,
+								center:['50%','50%'],
+								radius:'40%',
+								label:{
+									formatter:'{d}%',
+									// formatter:'{b}:{d}%',
+									fontSize:10,
+									distanceToLabelLine:-25,
+									color:'#000'
+								},
+								labelLine:{
+									show:false
+								},
+								itemStyle:{
+									borderWidth:2,
+									borderColor:'#fff'
+								}
+							}]
+						}
+						
+						// 不要忘了！！！
+						myPie.setOption(option);
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				
+				
+				
+			})
+		</script>
+	</body>
+
+</html>

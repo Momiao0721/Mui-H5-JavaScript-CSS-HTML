@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="dh">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">电话</span>
+			</a>
+			<a class="mui-tab-item" id="yj">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">邮件</span>
+			</a>
+			<a class="mui-tab-item" id="sz">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">设置</span>
+			</a>
+		</nav>
+		<style type="text/css">
+			.mui-active{
+				bottom: ;
+			}
+		</style>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages:[{
+				  url:'sz.html',
+			      id:'sz',
+			      styles:{
+			        top:'0px',
+					bottom:'50px'
+			      },
+			      extras:{}
+				},
+				{
+				  url:'yj.html',
+				  id:'yj',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'dh.html',
+				  id:'dh',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'home.html',
+				  id:'home',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				
+				]
+			})
+			mui.plusReady(function () {
+				
+				function YeiMian(id){
+					plus.webview.getWebviewById(id).show();
+				}
+				document.getElementById('sz').addEventListener('tap',function(){
+					YeiMian('sz')
+				});
+				document.getElementById('yj').addEventListener('tap',function(){
+					YeiMian('yj')
+				});
+				document.getElementById('dh').addEventListener('tap',function(){
+					YeiMian('dh')
+				});
+				document.getElementById('home').addEventListener('tap',function(){
+					YeiMian('home')
+				});
+			})
+		</script>
+	</body>
+
+</html>
