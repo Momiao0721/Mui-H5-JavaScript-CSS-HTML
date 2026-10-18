@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">首页</h1>
+		</header>
+		
+		<div class="mui-content">
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+				
+				
+				
+				
+				
+				
+				
+				
+
+			  <div class="mui-slider-indicator" id="lbt2"></div>
+				
+			</div>
+		</div>
+		
+		<ul class="mui-table-view mui-grid-view mui-grid-9" id="jgg">
+			
+		
+		
+			</ul>
+		
+		
+		<ul class="mui-table-view" id="kmlb">
+			
+			
+			
+		</ul>
+		<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="GengXing">更新</button>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function lbt(){
+
+					mui.ajax(http + '/api/building/banner/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var lbtHTML = '';
+								var lbtXia = '';
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+				</div>`
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									lbtHTML += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}">
+				  </a>
+				</div>`
+
+								lbtXia += `<div class="mui-indicator"></div>`
+
+								}
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].imgUrl}">
+				  </a>
+				</div>`
+								document.getElementById('lbt1').innerHTML = lbtHTML;
+								document.getElementById('lbt2').innerHTML = lbtXia;
+							}
+							mui('.mui-slider').slider({interval:3000})
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				lbt()
+
+				function jgg(){
+
+					var jggYeiMIan = [{
+						name:'li_1',
+						id:'li_1',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					{
+						name:'li_2',
+						id:'li_2',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					{
+						name:'li_3',
+						id:'li_3',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					{
+						name:'li_4',
+						id:'li_4',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					{
+						name:'li_5',
+						id:'li_5',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					{
+						name:'li_6',
+						id:'li_6',
+						img:'../IMG/3801a56eddc451da8c0962c2f0fd5266d116326b.gif'
+					},
+					]
+
+					var jggHTML = '';
+					for (var i = 0 ; i < jggYeiMIan.length ; i++) {
+					jggHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			<a href="#" id="${jggYeiMIan[i].id}">
+				<img src="${jggYeiMIan[i].img}" style="height: 50px; width: 50px; border-radius: 30px;">
+				<div class="mui-media-body">${jggYeiMIan[i].name}</div>
+			</a>
+		</li>`
+					}
+					document.getElementById('jgg').innerHTML = jggHTML
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					});
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					});
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					});
+					document.getElementById('li_4').addEventListener('tap',function(){
+						mui.openWindow('li_4.html')
+					});
+					document.getElementById('li_5').addEventListener('tap',function(){
+						mui.openWindow('li_5.html')
+					});
+					document.getElementById('li_6').addEventListener('tap',function(){
+						mui.openWindow('li_6.html')
+					});
+				}
+				jgg()
+
+				function kmlb(){
+
+					mui.ajax(http + '/api/model/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								kmlbQuan = data.rows;
+								kmlbWuTiao = 5;
+								GenXingkmlb()
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+					function GenXingkmlb(){
+
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						}
+
+						var kmlbHTML = '';
+						for (var i = 0 ; i < kmlbWuTiao ; i++) {
+
+						kmlbHTML += `<li class="mui-table-view-cell mui-media">
+				<a href="javascript:;">
+					<img class="mui-media-object mui-pull-left" src="${httpimg + kmlbQuan[i].imgUrl}">
+					<div class="mui-media-body">
+						<h4>${kmlbQuan[i].title}</h4>
+						<h5>${kmlbQuan[i].name}</h5>
+						<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+					</div>
+				</a>
+			</li>`
+						}
+						document.getElementById('kmlb').innerHTML = kmlbHTML
+
+					}
+
+					document.getElementById('GengXing').addEventListener('tap',function(){
+
+						kmlbWuTiao += 5;
+						GenXingkmlb()
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							this.innerHTML = '更新成功'
+							this.setAttribute('disabled','disabled')
+							this.classList.add('mui-disabled')
+						}
+
+					})
+
+				}
+				kmlb()
+			})
+		</script>
+	</body>
+
+</html>

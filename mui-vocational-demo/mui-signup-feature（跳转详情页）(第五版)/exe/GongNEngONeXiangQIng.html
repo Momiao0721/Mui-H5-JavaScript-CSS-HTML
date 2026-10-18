@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能一详情</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			<div id="XiangQWing" style="background-color: #929292; border-radius: 30px;">
+				
+				
+			</div>
+			
+			
+			<br>
+			
+			<div id="XiangQING">
+				
+			
+			</div>
+			
+		</div>
+		
+			<nav class="mui-bar mui-bar-tab" style="" id="DiBu">
+				
+			</nav>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('bAOmiNGID') || extra.id
+				console.log(id)
+
+				function XiangQing(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var XianinggQSang = '';
+								var XiangQingZong = '';
+								var XiangQingXia = '';
+
+								XianinggQSang += `<div id="" style="padding: 10px;">
+				<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%; border-radius: 30px">
+				<h4>${data.data.activityName}</h4>
+				<h5 style="color: #000000;">${data.data.startEndTime}</h5>
+				<h5 style="color: #000000;">${data.data.initiator}</h5>
+				<h5 style="color: #000000;">${data.data.overTime}</h5>
+				</div>`
+
+								XiangQingZong += `<div id="" style="border-radius: 30px; background-color: #929292; padding: 15px; font-size: 15px;">
+				  ${data.data.activityDetail}
+			</div>`
+
+								XiangQingXia += `<p style="position: absolute;">
+					<p style="position: absolute; top: 15px;" id="Su">
+					人数：${data.data.applyNum}
+					</p>
+					<button type="button" class="mui-btn mui-btn-red" id="BaoMIng" style="position: absolute;right: 0; top: -0.2px; height: 100%; width: 50%;">按钮</button>
+				</p>`
+
+				document.getElementById('XiangQWing').innerHTML = XianinggQSang;
+				document.getElementById('XiangQING').innerHTML = XiangQingZong;
+				document.getElementById('DiBu').innerHTML = XiangQingXia;
+
+				if (localStorage.getItem('baoming_' + id)) {
+					var btm = document.getElementById('BaoMIng');
+					btm.setAttribute('disabled', 'disabled');
+					btm.classList.add('mui-disabled');
+				}
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				XiangQing()
+
+				function GengXiang(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+								document.getElementById('Su').innerHTML = data.data.applyNum
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+
+				mui('#DiBu').on('tap','#BaoMIng',function(){
+
+					mui.confirm('你确定报名么','报名',['是','不是'],function(e){
+
+						if (e.index == 0) {
+							mui.ajax(http + '/api/activity/apply/',{
+								data:{
+									activityId:id
+								},
+
+								headers:{
+									'Content-Type':'application/json',
+									'Authorization':localStorage.getItem('token')
+								},
+
+								dataType:'json',
+								type:'post',
+								timeout:10000,
+								success:function(data){
+									console.log(data.code)
+
+									if (data.code == 200) {
+										mui.toast('报名成功');
+
+										localStorage.setItem('baoming_' + id, '1');
+										var btm = document.getElementById('BaoMIng')
+										btm.setAttribute('disabled','disabled')
+										btm.classList.add('mui-disabled')
+										GengXiang()
+
+										var parent = plus.webview.currentWebview().opener();
+										if (parent) {
+											mui.fire(parent, 'refresh');
+										}
+									}else{
+										mui.toast('报名失败')
+									}
+
+								},
+								error:function(xhr,type,errorThrown){
+
+								}
+							});
+						}
+
+					})
+
+				})
+
+			})
+		</script>
+	</body>
+
+</html>
