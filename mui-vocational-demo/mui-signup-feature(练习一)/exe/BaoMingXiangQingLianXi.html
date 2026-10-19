@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="XiangQing">
+				
+				
+				
+			</div>
+			
+		</div>
+		<nav class="mui-bar mui-bar-tab" id="XiangQingXia">
+			
+			
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMIngID') || extra.id
+				console.log(id)
+
+				function YeiMian(){
+
+				mui.ajax(http + '/api/activity/' + id,{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+
+							var XiangQingsShang = '';
+
+							var xiaHTML = ''
+
+							XiangQingsShang += `<div id="LiMian" style="padding: 5px; border-radius: 30px; background-color: #B6B6B6;">
+					<img src="${httpimg + data.data.imgUrl}" style="width: 100%; height: 200px; padding: 3px; border-radius: 30px;">
+					<div id="" style="padding: 5px;">
+						<h4>${data.data.activityName}</h4>
+						<h5 style="color: #000000;">${data.data.startEndTime}</h5>
+						<h5 style="color: #000000;">${data.data.overTime}</h5>
+					</div>
+				</div>
+				<br>
+				
+				<div id="XiangQingText" style="font-size: 15px; padding: 5px; background-color: #ACACB4; border-radius: 30px;">
+				${data.data.activityDetail}
+				</div>`
+
+							xiaHTML += `<button type="button" class="mui-btn mui-btn-red" id="BaoMing" BaoMingID="${data.data.id}" style="position: absolute; right: 0%; width: 50%;height: 100%; top: -0.5px;">按钮</button>
+
+			
+			<p style="color: #000000; position: absolute; top: 15px;">
+
+			人类：<span id="RenShu">${data.data.applyNum}</span>
+
+			</p>`
+						document.getElementById('XiangQing').innerHTML = XiangQingsShang;
+						document.getElementById('XiangQingXia').innerHTML = xiaHTML
+
+						if(localStorage.getItem('JIyi_' + id)){
+							var btn = document.getElementById('BaoMing')
+							btn.setAttribute('disabled', 'disabled');
+							btn.classList.add('mui-disabled');
+						}
+						}
+
+					},
+					error:function(xhr,type,errorThrown){
+					}
+				});
+				}
+				YeiMian()
+
+				function GenXing(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+
+								document.getElementById('RenShu').innerHTML = data.data.applyNum
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+
+				mui('#XiangQingXia').on('tap','#BaoMing',function(){
+
+					mui.confirm('你确定报名么喵~','报名',['报名','取消'],function(e){
+
+						if (e.index == 0) {
+
+							mui.ajax(http + '/api/activity/apply',{
+								data:{
+									activityId:id
+								},
+								headers:{
+									'Content-Type':'application/json',
+									'Authorization':localStorage.getItem('token')
+								},
+
+								dataType:'json',
+								type:'post',
+								timeout:10000,
+								success:function(data){
+									if(data.code == 200){
+										mui.toast('报名成功')
+
+										localStorage.setItem('JIyi_' + id, '1')
+
+										var btn = document.getElementById('BaoMing')
+										btn.setAttribute('disabled','disabled')
+										btn.classList.add('mui-disabled')
+										GenXing()
+
+										var DadGengXing = plus.webview.currentWebview().opener()
+
+										if(DadGengXing){
+											mui.fire(DadGengXing,'refresh')
+										}
+
+									}else{
+										mui.toast('报名失败')
+									}
+								},
+								error:function(xhr,type,errorThrown){
+
+								}
+							});
+
+						}
+
+					})
+
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

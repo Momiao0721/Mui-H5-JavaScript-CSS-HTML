@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能2</h1>
+		</header>
+		<div class="mui-content" style="position: relative;top: 6px;">
+			
+			
+			
+			<div id="ListHTML" style="padding: 5px;">
+				
+				
+			
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function () {
+
+				function HTMLLIst(){
+
+				mui.ajax(http + '/api/activity/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+						if (data.code == 200) {
+
+							var ListHHTML = '';
+							for (var i = 0 ; i < data.rows.length ; i++) {
+
+							ListHHTML += `<div id="" style="background-color: aquamarine; border-radius: 30px;">
+
+				<div>
+					<img src="${httpimg + data.rows[i].imgUrl}" style="width: 100%; padding: 5px; border-radius: 30px; height: 200px;">
+					<div id="" style="padding: 5px;">
+
+						<h4>${data.rows[i].activityName}</h4>
+						<h5 style="color: black;">${data.rows[i].startEndTime}</h5>
+						<h5 style="color: #000000;" class="mui-ellipsis">${data.rows[i].briefIntroduction}</h5>
+
+					<hr >
+					<p style="font-size: 15px; color: #000000; position: relative;">
+						人数：${data.rows[i].applyNum}
+						<button type="button" BAoMIng="${data.rows[i].id}" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 2%; border-radius: 30px;">按钮</button>
+					</p>
+					</div>
+				</div>
+				</div>
+				<br>
+				`
+							}
+							document.getElementById('ListHTML').innerHTML = ListHHTML
+							var GongNEngErXiangQingList = document.querySelectorAll('#ListHTML .mui-media')
+							for(var j = 0 ; j < GongNEngErXiangQingList.length ; j++){
+
+								(function(GongNeng){
+									GongNeng.addEventListener('tap',function(){
+
+										var id = this.getAttribute('BAoMIng')
+
+										console.log(id)
+
+										if(!id)return
+
+										plus.storage.setItem('BAoMIng', id);
+
+										mui.openWindow('GongEnngErXIangQing.html',{
+											extras:{
+												id:id
+											}
+										})
+
+									})
+								})(GongNEngErXiangQingList[j])
+
+							}
+
+						}
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+				}
+				HTMLLIst();
+
+				window.addEventListener('refresh', function () {
+					HTMLLIst();
+				})
+			})
+
+		</script>
+	</body>
+
+</html>
