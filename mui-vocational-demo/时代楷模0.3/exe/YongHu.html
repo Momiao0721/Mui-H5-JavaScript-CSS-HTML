@@ -1,0 +1,155 @@
+<!doctype html>
+<!-- 用户详情----完成 -->
+
+<html>
+	
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">用户</h1>
+		</header>
+		<div class="mui-content" style="">
+			<br>
+			
+			<div id="YongHu">
+				
+			<div id="" style="padding: 10px; height: 130px; border-radius: 10px; background-color: #4cb8ff;">
+					<img class="mui-media-object mui-pull-left" src="../IMG/4bc0706dd1a65.jpg" style="border-radius: 50px; height:100px;">
+				<div id="" style="position: relative;left: 6px;top: 15px;">
+					
+					<h4>用户名:</h4>
+					
+					<h5 style="color: #000000;">性别:</h5>
+					<h5 style="color: #000000;">手机号:</h5>
+					
+				</div>
+			</div>
+			
+			</div>
+			
+			<br>
+			
+			<ul id="List" class="mui-table-view" style=" background-color: #0062CC; color: #FAFAFA;">
+				
+				<!-- 	<li class="" style="height: 50px; ">
+						<h4 style="position: relative;top: 20%;">
+								Item 1
+								<p style="position: absolute;right: 2%; top: -1px; font-size: 15px; color: #000000;">
+									12￥
+								</p>
+						</h4>
+					</li>
+					<li class="" style="height: 50px;">
+						<h4>
+								Item 1
+						</h4>
+					</li>
+					<li class="" style="height: 50px;">
+						<h4>
+								Item 1
+						</h4>
+					</li> -->
+					
+					
+				</ul>
+			
+		</div>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				function YongHu(){
+					
+					mui.ajax(http + '/api/common/user/getInfo',{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							console.log(JSON.stringify(data))
+							if (data.code == 200) {
+								
+								var YongHuHTML = '';
+								
+								var ListOne = '';
+								
+								YongHuHTML += `<div id="" style="padding: 10px; height: 130px; border-radius: 10px; background-color: #4cb8ff;">
+					<img class="mui-media-object mui-pull-left" src="${httpimg + data.data.avatar}" style="border-radius: 50px; height:100px;">
+				<div id="" style="position: relative;left: 6px;top: 15px;">
+					
+					<h4>用户名:${data.data.userName}</h4>
+					
+					<h5 style="color: #000000;">性别:${data.data.sex}</h5>
+					<h5 style="color: #000000;">手机号:${data.data.phonenumber}</h5>
+					
+				</div>
+			</div>`
+			
+								ListOne += `<li class="" style="border-radius: 20px; height: 50px; ">
+						<h4 style="position: relative;top: 20%;">
+								金额
+								<p style="position: absolute;right: 2%; top: -1px; font-size: 15px; color: #000000;">
+									${data.data.balance}
+								</p>
+						</h4>
+					</li>
+
+					<li class="" style="height: 50px; border-radius: 20px;">
+						<h4 style="position: relative;top: 20%;">
+								证件号
+								<p style="position: absolute;right: 2%; top: -1px; font-size: 15px; color: #000000;">
+									${data.data.idCard}
+								</p>
+						</h4>
+					</li>
+					
+					<li class="" style="height: 50px; border-radius: 20px;">
+						<h4 style="position: relative;top: 20%;">
+								电子邮箱
+								<p style="position: absolute;right: 2%; top: -1px; font-size: 15px; color: #000000;">
+									${data.data.email}
+								</p>
+						</h4>
+					</li>
+					`
+					
+
+					
+					
+					
+					
+								document.getElementById('YongHu').innerHTML = YongHuHTML
+								document.getElementById('List').innerHTML = ListOne
+								document.getElementById('List').innerHTML = IdVade
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				YongHu()
+				
+				
+			})
+		</script>
+	</body>
+
+</html>

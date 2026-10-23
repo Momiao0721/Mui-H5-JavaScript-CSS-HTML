@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">数据分析</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="TiaoXingTu" style="height: 200px; width: 100%;"></div>
+			<div id="zeiXianTu" style="height: 200px; width: 100%;"></div>
+			<div id="BingTu" style="height: 200px; width: 100%;"></div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/echarts.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				var TiaoXing = echarts.init(document.getElementById('TiaoXingTu'))
+				var ZeiXian = echarts.init(document.getElementById('zeiXianTu'))
+				var Bing = echarts.init(document.getElementById('BingTu'))
+				
+				// 条
+				
+				mui.ajax(http + '/api/data/comment/list_2',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(res){
+						
+						// 【改】先打印，确认接口返回的真实结构
+						// console.log('接口返回 =', JSON.stringify(res))
+						
+						// 【改】不是 200 就退出
+						if (res.code != 200) {
+							mui.toast('接口没返回200');
+							return;
+						}
+						
+						// 【改】接口实际返回：data 里有 name / woman / man 三个数组
+						//       原来写的 res.rows.admin 是错的（不是 rows，也没有 admin 字段）
+						var d = res.data;
+						var xData     = d.name;                      // x轴：月份
+						var womanData = d.woman;   // 【改】字符串数组转数字："22" → 22
+						var manData   = d.man;
+						
+						// console.log('xData=', xData, ' womanData=', womanData, ' manData=', manData)
+						
+						var lineOption = {
+						    color:['#007aff','#ff9500'],//【改】原来是黑白配色，白柱在白底上看不见
+						    legend: { // 展示系列的标记
+						        data: ['女性评论数统计', '男性评论数统计'],
+						        left:"center",
+						    },
+						    grid:{  
+						        show:true
+						    },
+						    xAxis: {
+						        type: 'category',
+						        data: xData,
+						        splitLine:{ show: true }, //x轴网格线
+						    },
+						    yAxis: {
+						        type: 'value'
+						    },
+							
+						    series: [{
+						        name: '女性评论数统计',
+						        data: womanData,
+						        type: 'bar'
+						    },
+						    {
+						        name: '男性评论数统计',
+						        data: manData,
+						        type: 'bar'
+						    },
+							
+						  ]
+						}
+						
+						// 【改】setOption 必须写在 success 里边：ajax 是异步的，
+						//       写在回调外面时数据还没回来，图表永远是空的；
+						//       而且方法名是 setOption（没有 s）
+						TiaoXing.setOption(lineOption)
+						
+					},
+					error:function(xhr,type,errorThrown){
+						// 【改】失败也要能看到原因
+						// console.log('接口失败：', type, xhr.status)
+					}
+				});
+				
+				// 折线图
+				
+				mui.ajax(http + '/api/read/book/list_1',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(res){
+						
+						// 【改】先打印，确认折线接口的真实字段名
+						// console.log('折线接口返回 =', JSON.stringify(res))
+						
+						if (res.code == 200) {
+							
+							var r = res.data
+							var xLineData = r.name        // 【改】字段名以打印结果为准
+							var YData = r.value  // 【改】字符串转数字
+							
+							var lineOption = {
+							    color:["#007aff"],//【改】原来是白色，白线在白底上看不见
+							    legend:{
+							        data:['所有用户阅读书籍数量变化趋势'],
+							        left: 'center',
+							    },
+							    xAxis: {
+							        splitLine: { 
+							            show: true
+							        },
+							        type: 'category',
+							        data: xLineData
+							    },
+							    yAxis: {
+							        min: 0,// 最小值
+							        type: 'value'
+							    },
+							    series: [{
+							        name:'所有用户阅读书籍数量变化趋势',
+							        data: YData,// y轴坐标
+							        type: 'line'
+							    }]
+							}
+							
+							// 【改】setOption 挪进 if 里（接口失败时 lineOption 是 undefined）；
+							//       方法名是 setOption，没有 s
+							ZeiXian.setOption(lineOption)
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						// 【改】失败也要能看到原因
+						console.log('折线接口失败：', type, xhr.status)
+					}
+				});
+				
+				
+				// 饼图
+				
+				mui.ajax(http + '/api/read/book/list/type_1',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(res){
+						
+						// 【改】先打印，确认饼图接口的真实字段名
+						// console.log('饼图接口返回 =', JSON.stringify(res))
+						
+						if (res.code == 200) {
+							
+							var d = res.data
+							
+							var BingBing = []
+							
+							// 【改】饼图要的是「配对好的对象数组」：
+							//       原来写的 'd.count' / 'name' 加了引号是死字符串，不是变量；
+							//       必须按下标 i 把 name 和 count 配成一个对象
+							for (var i = 0 ; i < d.name.length ; i++) {
+								
+								BingBing.push ({
+									name: d.name[i],              // 【改】不加引号 = 取变量
+									value: d.count[i]     // 【改】转成数字，饼图才算得对
+								})
+								
+							}
+							
+							var pieOption = {
+							    color:['#007aff','#ff9500','#34c759','#ff3b30','#af52de','#ffcc00'],//【改】原来全是 green，分不清谁是谁
+							    tooltip: {
+							        trigger: 'item'
+							    },
+							    legend: {
+							        bottom: '0',
+							        left: 'center',
+							        icon:'circle'
+							        // 【改】删掉 data：饼图会自动用每个扇区的 name
+							    },
+							    series: [{
+							        type: 'pie',
+							        radius: '45%',// 饼图半径
+							        label: {
+							            show: true,// 【改】去掉旧版 normal 外层（ECharts 5 已废弃）
+							            formatter: '{d}%',// 显示格式
+							        },
+							        data: BingBing// 【改】塞配对好的数组
+							    }]
+							}
+							
+							// 【改】setOption 挪进 if 里，并且必须写在 success 内（ajax 异步）
+							Bing.setOption(pieOption)
+							
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						// 【改】失败也要能看到原因
+						console.log('饼图接口失败：', type, xhr.status)
+					}
+				});
+				
+				
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">更多</h1>
+		</header>
+		<div class="mui-content">
+			
+			
+			<ul class="mui-table-view mui-grid-view mui-grid-9" id="jggTuo">
+					
+					<!-- <li class="mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-6">
+						<a href="#">
+							<img src="" style="height: 80px; width: 80px; border-radius: 50px;">
+							<div class="mui-media-body">Phone</div>
+						</a>
+					</li> -->
+					
+					
+					
+			</ul>
+			
+			
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+				
+				function YeiMian(){
+					
+					var YMian = [{
+						name:'不知道',
+						id:'li_2',
+						img:'../IMG/de9509b7ce004.jpg'
+					},
+					{
+						name:'用户',
+						id:'YongHu',
+						img:'../IMG/a3de11d8bc3eb135c29fcfa4e01ea8d3fc1f44ad.jpg'
+					},]
+					
+					var YeiMianHTML = ''
+ 					
+					for (var i = 0 ; i < YMian.length ; i++) {
+						YeiMianHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-6 mui-col-sm-6">
+						<a href="#" id="${YMian[i].id}">
+							<img src="${YMian[i].img}" style="height: 80px; width: 80px; border-radius: 50px;">
+							<div class="mui-media-body">${YMian[i].name}</div>
+						</a>
+					</li>`
+					}
+					
+					document.getElementById('jggTuo').innerHTML = YeiMianHTML;
+					
+					document.getElementById('li_2').addEventListener('tap',function(){
+						
+						mui.openWindow('li_2.html')
+						
+					});
+					
+					document.getElementById('YongHu').addEventListener('tap',function(){
+						
+						mui.openWindow('YongHu.html')
+						
+					})
+					
+				}
+				YeiMian()
+			})
+		</script>
+	</body>
+
+</html>

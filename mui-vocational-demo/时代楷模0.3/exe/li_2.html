@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">身边英雄</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view mui-grid-view mui-grid-9" id="list">
+				
+			<!-- <li TiaoZuanID = "${data.rows[i].id}" class="mui-table-view-cell mui-col-xs-6 mui-media" style="float: left;">
+					<img src="${API_BASE + data.rows[i].imgUrl}" style="height: 100px; width: 100%;">
+					<h4 class="mui-ellipsis">${data.rows[i].title}</h4>
+					<h5>${data.rows[i].name}</h5>
+					<p class="mui-ellipsis">${data.rows[i].content}</p>
+				 </li>
+				 
+			<li class="mui-table-view-cell mui-col-xs-6 mui-media" style="float: left;">
+					<img src="${API_BASE + data.rows[i].imgUrl" style="height: 100px; width: 100%;">
+					<h4 class="mui-ellipsis">${data.rows[i].title}</h4>
+					<h5>${data.rows[i].name}</h5>
+					<p class="mui-ellipsis">${data.rows[i].content}</p>
+				 </li> -->
+			
+			</ul>
+		
+			
+			
+			
+		</div>
+		
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				function Lsit(){
+					
+				mui.ajax(http + '/api/around/list',{
+					data:{
+						
+					},
+					'Content-Type':'application/json',
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						console.log (JSON.stringify(data))
+						if (data.code == 200) {
+							
+							var listHTML = '';
+							
+							for (var i = 0 ; i < data.rows.length ; i++) {
+							listHTML += `<li TiaoZuanID = "${data.rows[i].id}" class="mui-table-view-cell mui-col-xs-6 mui-media" style="float: left;">
+					<img src="${httpimg + data.rows[i].imgUrl}" style="height: 100px; width: 100%;">
+					<h4 class="mui-ellipsis">${data.rows[i].title}</h4>
+					<h5>${data.rows[i].name}</h5>
+					<p class="mui-ellipsis">${data.rows[i].content}</p>
+				 </li>`
+							}
+							document.getElementById('list').innerHTML = listHTML;
+							var XiangQingList = document.querySelectorAll('#list .mui-media')
+							
+							for (var j = 0 ; j < XiangQingList.length ; j++) {
+								
+								(function(XiangQing){
+									XiangQing.addEventListener('tap',function(){
+										
+										var id = this.getAttribute('TiaoZuanID')
+										
+										console.log(id)
+										
+										if(!id)return;
+										
+										plus.storage.setItem('TiaoZuanID',id)
+										
+										mui.openWindow('YingXungHTML.html',{
+											extras:{
+												id:id
+											}
+										})
+										
+									})
+								})(XiangQingList[j])
+								
+							}
+							
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				}
+				Lsit()
+			})
+		</script>
+	</body>
+
+</html>

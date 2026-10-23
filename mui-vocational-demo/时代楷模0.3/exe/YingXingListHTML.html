@@ -1,0 +1,156 @@
+
+
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content" id="YXXIANGqING">
+			
+			<!-- 【改】详情区单独包一层：只渲染它，别动整个 .mui-content，
+			     否则下面 #PingLuen 评论容器会被一起删掉 -->
+			<div id="YingXiongXiangQing">
+			<ul class="" style="padding: 10px;">
+
+						<img src="" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h5>1</h5>
+							<h6>1</h6>
+							<h6>1</h6>
+							<p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+						</div>
+				
+			</ul>
+			</div>
+			
+			<!-- 评论LIst -->
+			<hr >
+			
+			<h4 style="padding: 2px; color: red;" >评论</h4>
+			
+			<div id="PingLuen">
+				
+				<!-- <div id="" style="padding: 10px;">
+					<li style="background-color: #ffffb7; height: 50px; width: 100%;">
+						
+						<h4>姓名：</h4>
+						<h4 style="position: absolute;right: 5%;  font-size: 15px;">点赞</h5>
+						<p>东西：
+						
+						
+						</p>
+					</li>
+				</div> -->
+				
+			</div>
+			
+			
+		</div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				// 【改】currentWebview() 不用传参数；字段名是 extra，不是 extre
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('TiaoZuanID') || extra.id
+				console.log(id)
+				function YingXingXianGQIng(){
+					
+					mui.ajax(http + '/api/hero/' + id,{
+						data:{
+							
+						},
+						'Content-Type':'application/json',
+						
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								var XiangQingHTML = '';
+								XiangQingHTML += `<ul class="" style="padding: 10px;">
+
+						<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h5>${data.data.title}</h5>
+							<h6>${data.data.name}</h6>
+							<h6>点击量:${data.data.clickNum}</h6>
+							<p class="mui-ellipsis">${data.data.introduction}</p>
+						</div>
+				
+			</ul>`
+			// 【改】只替换详情区，别动整个 .mui-content（否则评论容器 #PingLuen 会被删掉，后面就报 innerHTML of null）
+			document.getElementById('YingXiongXiangQing').innerHTML = XiangQingHTML;
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				YingXingXianGQIng()
+				
+				function PingLuenjVAV(){
+					
+					mui.ajax(http + '/api/hero/evaluate/list',{
+						data:{
+							heroId:id
+						},
+							'Content-Type':'application/json',   // 【改】挪进 headers 里才有效
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								var YXHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									
+								YXHTML += `<div style="padding: 10px;">
+					<div style="background-color: #fff3eb; height: 60px; width: 100%;">
+					<h4 style = "padding: 5px;">
+						<img class="mui-media-object mui-pull-left" style="height: 20px; width: 20px;" src="${httpimg + data.rows[i].fromUserAvatar}">
+						<h4>姓名：${data.rows[i].fromUserName}</h4>
+						<h4 style="position: absolute;right: 5%;  font-size: 15px;">点赞：${data.rows[i].likeCount}</h4>
+						<p>东西：${data.rows[i].evaluateContent}
+						</p>
+					</h4>
+					</div>
+				</div>`
+								}
+								document.getElementById('PingLuen').innerHTML = YXHTML;
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				PingLuenjVAV()
+			})
+		</script>
+	</body>
+
+</html>

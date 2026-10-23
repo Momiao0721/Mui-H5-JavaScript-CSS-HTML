@@ -1,0 +1,407 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 引入 mui 的样式文件 -->
+		<link href="../css/mui.css" rel="stylesheet" />
+		<style>
+			* {
+				touch-action: pan-y;
+				/* 只允许纵向手势，避免横向滑动和页面滚动打架 */
+			}
+
+			/* .mui-card .mui-control-content {
+				padding: 10px;
+			} */
+			.mui-card {
+				margin: 0 0 0.625rem 0;
+				border-radius: 0.625rem;
+			}
+
+			/* 两个 tab 内容区的高度（保证滑块切换时高度一致） */
+			.mui-control-content {
+				height: 473px;
+			}
+
+			.mui-bar-nav {
+				box-shadow: none;
+			}
+
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+			}
+
+			.mui-table h4 {
+				line-height: 21px;
+				font-weight: 31.25rem;
+			}
+
+			/* 去掉 mui 表格视图上下自带的 1px 分割线 */
+			.mui-table-view:before {
+				height: 0px;
+			}
+
+			.mui-table-view:after {
+				height: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- 顶部导航栏 -->
+		<header class="mui-bar mui-bar-nav" style="background-color: white;">
+			<h1 class="mui-title" style="font-weight: bolder;">学习心得</h1>
+		</header>
+
+		<!-- mui-content：页面主体内容区 -->
+		<div class="mui-content">
+			<div style="background-color: white;margin-bottom: 5px;">
+				<!-- mui-segmented-control：mui 自带的分段控制器（就是顶部那两个切换按钮） -->
+				<div class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-negative">
+					<!-- href="#item1" 指向下面 id="item1" 的容器：点它切到"学习感言"这一屏 -->
+					<a class="mui-control-item gy mui-active" href="#item1">学习感言</a>
+					<!-- href="#item2" 指向下面 id="item2" 的容器：点它切到"学习历史"这一屏 -->
+					<a class="mui-control-item ls" href="#item2">学习历史</a>
+				</div>
+			</div>
+			<div style="width: 100%;padding: 0.625rem;">
+				<!-- ===== 第一屏：学习感言 ===== -->
+				<div id="item1" class="mui-control-content mui-active">
+					<!-- id="gy"：感言列表的容器，JS 会把生成的 <li> 塞进这里 -->
+					<ul id="gy" class="mui-table-view mui-table" style="background-color: #efeff4;">
+
+						<!-- JS写入点 -->
+
+					</ul>
+					<!-- id="addGY"：新建感言按钮的容器，事件委托绑在它身上 -->
+					<div id="addGY" style="width: 100%;">
+						<!-- margin: 60% 35% 10% 35%; -->
+						<button type="button" style="margin: 72% 35% 10% 35%;width: 30%;border-radius: 1.875rem;"
+							class="mui-btn mui-btn-red">新建感言</button>
+					</div>
+				</div>
+
+				<!-- ===== 第二屏：学习历史 ===== -->
+				<div id="item2" class="mui-control-content mui-table">
+					<!-- id="ls"：历史列表的容器，JS 会把生成的卡片塞进这里 -->
+					<ul class="mui-table-view" style="background-color: #efeff4;" id="ls">
+						<!-- JS 写入点 -->
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- <script src="../js/jquery-3.7.1.min.js"></script> -->
+		<script src="../js/http.js"></script>
+		<!-- http.js 里定义了 http（接口地址前缀）和 httpimg（图片前缀） -->
+		<script src="../js/mui.js"></script>
+
+		<script type="text/javascript">
+
+			// mui.init()：初始化 mui 框架
+			mui.init();
+
+			// plusReady：H5+ 环境准备好后执行（用到 plus.xxx 必须写在这里面）
+			mui.plusReady(function() {
+
+				// 【子页面 → 父页面 刷新的接收端】
+				// 子页面返回时会执行 mui.fire(父页面,'refresh') 发一个 refresh 事件过来，
+				// 这里就是"监听"那个事件：一旦收到，就重新加载本页 → 列表随之刷新
+				window.addEventListener("refresh", function() {
+					location.reload();
+				})
+
+				// ================= 一、学习感言 =================
+
+				// 感言
+				function ganyan() {
+
+					// 感言列表
+					mui.ajax(http + '/api/testimonials/listByDesc', {
+						data: {},
+						headers: {
+							// 带登录令牌
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 5000, //超时时间设置为10秒；
+						success: function(data) {
+							// console.log(JSON.stringify(data));
+
+							// 用来拼字符串的变量（先把 HTML 拼好，最后一次性塞进去，比反复操作 DOM 快）
+							var gyCon = '';
+							// 拿到感言列表的容器
+							var gyId = document.getElementById('gy')
+
+							// 循环后端返回的每一行数据（data.rows 是数组）
+							for (var i = 0; i < data.rows.length; i++) {
+								// 用模板字符串（反引号）拼出一条条 <li>；${...} 是占位符，会被真实数据替换
+								gyCon +=
+									`<li class="mui-table-view-cell" style="width: 100%;background-color: #FFFFFF;border-radius: 0.625rem;margin-bottom: 10px;">
+											<div class="mui-slider-right mui-disabled">
+												<a class="mui-btn mui-btn-red" gyId="${data.rows[i].id}">删除</a>
+											</div>
+											<div class="mui-slider-handle">
+												<div class="mui-table-cell">
+													<h4 class="mui-ellipsis" style="font-size: 14px;">${data.rows[i].title}</h4>
+													<p class="mui-h6 mui-ellipsis-2">${data.rows[i].content}</p>
+												</div>
+											</div>
+										</li>`
+								// gyId="${data.rows[i].id}"：把这条感言的 id 记在"删除"按钮身上，
+								// 后面点击时就能知道要删哪一条
+							}
+
+							// 拼完后一次性写进容器（注意：这行必须在循环外面，否则每次都只留最后一条）
+							gyId.innerHTML = gyCon;
+
+							// 删除感言
+							// 事件委托：绑在 #gy 容器上，但只有点到 .mui-btn 才触发
+							// 好处：列表是后生成的，事件也照样有效（不需要给每个按钮单独绑）
+							mui('#gy').on('tap', '.mui-btn', function() {
+								// this = 被点到的那个"删除"按钮
+								// parentNode 是 .mui-slider-right，再上一层 parentNode 才是整个 <li>
+								var li = this.parentNode.parentNode;
+								// 读出按钮身上记的感言 id
+								var gyId = this.getAttribute('gyId');
+								// console.log(gyId);
+
+								// 弹确认框：按钮数组 ['取消','确认'] 的索引是 0 和 1
+								mui.confirm('你确认要删除本条感言记录吗？', '删除感言', ['取消', '确认'], function(e) {
+									// e.index == 1 → 说明点了"确认"
+									if (e.index == 1) {
+										// 调删除接口：路径后面直接拼感言 id
+										mui.ajax(http + '/api/testimonials/' +
+											gyId, {
+												data: {},
+												headers: {
+													'Authorization': localStorage
+														.getItem('token')
+												},
+												dataType: 'json', //服务器返回json格式数据
+												type: 'DELETE', //HTTP请求类型
+												timeout: 5000, //超时时间设置为10秒；
+												success: function(data) {
+													// console.log(data.code);
+													mui.toast('删除成功');
+													// 从页面上把这一条 <li> 移除掉（不用整页刷新）
+													li.parentNode.removeChild(li);
+												},
+												error: function(xhr, type, errorThrown) {
+
+												}
+											});
+									} else {
+										// 点了"取消"：把滑出来的按钮收回去（延时 0 毫秒，等确认框关闭）
+										setTimeout(function() {
+											// $.swipeoutClose(li);
+											mui.swipeoutClose(li)
+										}, 0);
+									}
+								})
+							})
+
+							// 新增感言
+							// 事件委托：点到 #addGY 里的 .mui-btn 才触发
+							mui('#addGY').on('tap', '.mui-btn', function() {
+								// console.log('你点击了添加按钮')
+								// 打开子页面 addGY.html（不需要传参：新建嘛）
+								mui.openWindow('addGY.html')
+							})
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+				}
+				ganyan();
+
+				// ================= 二、学习历史 =================
+
+				// 历史
+				lishi()
+
+				function lishi() {
+
+					// 历史列表
+					// 【注意】这里 userId 是写死的 1！正常应该先调 /api/common/user/getInfo
+					//        拿到当前登录用户的真实 userId 再拼进来，否则换账号看到的还是 1 号的历史
+					mui.ajax(http + '/api/history/list?userId=1', {
+						data: {},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json', //服务器返回json格式数据
+						type: 'get', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；
+						success: function(data) {
+							// console.log(data.code);
+							// console.log(JSON.stringify(data));
+
+							// 历史列表的容器
+							var lsId = document.getElementById('ls');
+							var lsCon = '';
+
+							for (var i = 0; i < data.rows.length; i++) {
+
+								// 判断这条历史有没有笔记：wstudyNote == null 表示"还没有笔记"
+								if (data.rows[i].wstudyNote == null) {
+									// ---- 没有笔记：只显示历史内容 + "添加笔记"按钮 ----
+									lsCon += `
+									<li class="" style="">
+										<div class="mui-card">
+											<div class="mui-card-content">
+												<div class="mui-card-content-inner">
+													<h4 style="font-size: 14px;" class="mui-ellipsis">${data.rows[i].title}</h4>
+													<p>${data.rows[i].issueTime}</p>
+													<p class="mui-h6 mui-ellipsis-2">${data.rows[i].content}</p>
+												</div>
+											</div>
+											<div class="mui-card-footer">
+												<a style="font-size: 20px;margin: -10px auto;color: #c2050f;"
+													class="mui-card-link mui-icon mui-icon-compose addBJ" xxLsId="${data.rows[i].id}">
+													<span style="font-size: 12px">添加笔记</span>
+												</a>
+											</div>
+										</div>
+									</li>
+									`
+									// class="... addBJ"：给按钮起个标记类名，便于事件委托选中
+									// xxLsId="${data.rows[i].id}"：把这条历史的 id 记在按钮身上，
+									// 点"添加笔记"时要把它传给 addBJ.html
+								} else {
+									// ---- 已有笔记：显示历史 + 笔记内容 + 删除/编辑笔记 ----
+									lsCon += `
+									<li class="" style="">
+										<div class="mui-card">
+											<div class="mui-card-content">
+												<div class="mui-card-content-inner">
+													<h4 style="font-size: 14px;" class="mui-ellipsis">${data.rows[i].title}</h4>
+													<p>${data.rows[i].issueTime}</p>
+													<p class="mui-h6 mui-ellipsis-2">${data.rows[i].content}</p>
+												</div>
+											</div>
+											<div style="width: 100%;height: 1px;background-color: #c8c7cc;"></div>
+											<div id="" style="padding: 10px;">
+												<span>学习笔记</span>
+												<a style="color: #c2050f;position: absolute;right: 10px;font-size: 12px;"
+													class="mui-card-link delBJ" BJId="${data.rows[i].wstudyNote.noteId}" xxLsId="${data.rows[i].id}">删除</a>
+												<div id=""
+													style="width: 100%;background-color: #f6f6f6;padding: 10px;border-radius: 5px;">
+													${data.rows[i].wstudyNote.noteContent}
+												</div>
+											</div>
+									
+											<div class="mui-card-footer">
+												<a style="font-size: 20px;margin: -10px auto;color: #eda645;" class="mui-card-link mui-icon mui-icon-compose editBJ" bjId="${data.rows[i].wstudyNote.noteId}" bjTitle="${data.rows[i].wstudyNote.noteTitle}" bjContent="${data.rows[i].wstudyNote.noteContent}">
+													<span style="font-size: 12px">
+														编辑笔记
+													</span>
+												</a>
+											</div>
+										</div>
+									</li>
+									`
+									// delBJ 按钮带两个属性：BJId（笔记id）、xxLsId（历史id），删除时都要用
+									// editBJ 按钮带三个属性：bjId / bjTitle / bjContent，编辑时传给子页面回填
+								}
+							}
+
+							// 一次性写入容器
+							lsId.innerHTML = lsCon;
+
+							// 添加笔记
+							mui('#ls').on('tap', '.addBJ', function() {
+								// this = 被点到的"添加笔记"按钮，读出它身上记的历史 id
+								var xxLsId = this.getAttribute('xxLsId');
+								// console.log('你点击了添加笔记按钮'+xxLsId);
+
+								// 【父 → 子 传参】mui.openWindow(地址, 页面id, 参数对象)
+								// 参数必须放在 extras 里，子页面用 currentWebview().xxLsId 取
+								mui.openWindow('addBJ.html', 'addBJ', {
+									extras: {
+										xxLsId: xxLsId
+									}
+								})
+							})
+
+							// 编辑笔记
+							mui('#ls').on('tap', '.editBJ', function() {
+								// console.log('你点击了编辑');
+								// 跳转到编辑笔记页面+lsId
+								// 把按钮身上记的 3 个值读出来
+								var bjId = this.getAttribute('bjId');
+								var bjTitle = this.getAttribute('bjTitle');
+								var bjContent = this.getAttribute('bjContent')
+
+								// 【父 → 子 传参】打开 editBJ.html，把笔记的 id/标题/内容都传过去
+								mui.openWindow('editBJ.html', 'editBJ', {
+									// 传参
+									extras: {
+										// 笔记内容（id，标题，内容）
+										bjId:bjId,
+										bjTitle:bjTitle,
+										bjContent:bjContent
+									}
+								})
+								// 编辑笔记页面
+								// 获取笔记信息并显示
+								// 修改并提交
+								// 跳回心得页面
+							})
+
+							// 删除笔记
+							mui('#ls').on('tap', '.delBJ', function() {
+								// console.log('你点击了删除');
+
+								// 读出笔记 id 和历史 id（删除接口两个都要）
+								var bjId = this.getAttribute('BJId');
+								var xxLsId = this.getAttribute('xxLsId');
+								// console.log(bjId);
+
+								// 调删除笔记接口，两个参数直接拼在 URL 上（query 传参）
+								mui.ajax(http + '/api/history/note?noteId=' + bjId +
+									'&studyHistoryId=' + xxLsId, {
+										data: {},
+										dataType: 'json', //服务器返回json格式数据
+										type: 'DELETE', //HTTP请求类型
+										timeout: 5000, //超时时间设置为5秒；
+										headers: {
+											'Authorization': localStorage.getItem('token')
+										},
+										success: function(data) {
+											// console.log('你点击了删除'+data.code);
+											// console.log(JSON.stringify(data));
+											if (data.code == 200) {
+												// 提示删除结果（data.msg 是后端返回的提示语）
+												mui.alert("笔记删除" + data.msg)
+												// 有BUG
+												// 直接整页重新加载，让列表更新
+												location.reload();
+											}
+										},
+										error: function(xhr, type, errorThrown) {
+
+										}
+									});
+							})
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+				}
+			});
+		</script>
+	</body>
+
+</html>
