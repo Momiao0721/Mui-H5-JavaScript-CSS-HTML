@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 引入 mui 的样式文件 -->
+		<link href="../css/mui.css" rel="stylesheet" />
+		<style type="text/css">
+			* {
+				touch-action: pan-y;
+				/* 只允许纵向手势，避免横向滑动和页面滚动打架 */
+			}
+			.mui-input-row label {
+			    width: 20%;
+				/* border: 1px solid #AAAAAA; */
+			}
+			/* 输入框 / 文本域占 80% 宽，加边框和圆角 */
+			.mui-input-row label ~ input, .mui-input-row label ~ textarea {
+			    width: 80%;
+				border: 1px solid #cccccc;
+				border-radius: 5px;
+				margin-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<!-- 顶部导航栏 -->
+		<header class="mui-bar mui-bar-nav">
+			<!-- mui-action-back：mui 自带的"返回"按钮，点它自动关闭本页回到上一页 -->
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<!-- 本页标题：说明这是"添加感言"的子页面 -->
+			<h1 class="mui-title">添加感言</h1>
+		</header>
+
+		<!-- mui-content：页面主体内容区 -->
+		<div class="mui-content">
+			<div class="mui-card">
+
+				<div class="mui-card-content" style="height: 200px;width: 100%;">
+					<!-- 标题输入行 -->
+					<div class="mui-input-row">
+						<label>标题</label>
+						<!-- id="title"：后面用 getElementById('title') 取用户输入的值 -->
+						<input type="text" id="title" class="mui-input-clear" placeholder="请输入标题">
+					</div>
+					<!-- 内容输入行 -->
+					<div class="mui-input-row">
+						<label>内容</label>
+						<!-- id="content"：后面用 getElementById('content') 取用户输入的值 -->
+						<textarea rows="6" cols="" id="content"></textarea>
+					</div>
+				</div>
+
+				<!-- 提交按钮的容器：id="tj"，事件委托就绑在它身上 -->
+				<div id="tj" class="mui-card-footer">
+					<a class="mui-card-link" style="margin: -10px auto;">提交</a>
+				</div>
+			</div>
+		</div>
+
+		<script src="../js/http.js"></script>
+		<!-- http.js 里定义了 http（接口地址前缀）和 httpimg（图片前缀） -->
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+
+			// mui.init()：初始化 mui 框架
+			mui.init({
+				// beforeback：本页面"返回之前"会触发的钩子
+				beforeback:function () {
+					// plus.webview.currentWebview()：拿到"当前这个页面"的 webview 对象
+					// .opener()：拿到"是谁打开了我" → 也就是父页面 xd.html
+					var v=plus.webview.currentWebview().opener();
+					// mui.fire(目标页面, '自定义事件名')：朝父页面"喊一嗓子"
+					// 父页面里监听的正是这个 refresh 事件，收到后就会刷新列表
+					mui.fire(v,'refresh');
+					// 返回 true：允许继续执行"关闭本页"的默认动作
+					return true;
+				}
+			})
+			
+			// plusReady：等 H5+ 环境准备好再执行（凡是用到 plus.xxx 都要写在这里面）
+			mui.plusReady(function () {
+
+			    // 事件委托：在 #tj 这个容器里，点到 .mui-card-link 才触发
+			    // 用委托的好处：哪怕按钮是后面才生成的，事件依然有效
+			    mui('#tj').on('tap','.mui-card-link',function(){
+			      // console.log('你点击了提交按钮');
+
+				  // 取出用户在输入框里填的内容
+				  var title = document.getElementById('title').value;
+				  var content = document.getElementById('content').value;
+				  // console.log(title+content);
+
+				  // 发送请求：新增一条感言
+				  mui.ajax(http + '/api/testimonials',{
+				  	// data：要提交给后端的参数
+				  	data:{
+				  		title:title,
+						content:content
+				  	},
+					headers:{
+						// 【关键】POST 必须声明 json，否则 mui 会发成表单格式，
+						//        后端就会报 Content type 'application/x-www-form-urlencoded' not supported
+						'Content-Type':'application/json',
+						// 带上登录令牌，后端靠它识别"你是谁"
+						'Authorization':localStorage.getItem('token')
+					},
+				  	dataType:'json',//服务器返回json格式数据
+				  	type:'post',//HTTP请求类型
+				  	timeout:10000,//超时时间设置为10秒；
+				  	success:function(data){
+				  		// console.log(data.code);
+						// 弹一个小提示
+						mui.toast  ('新增成功');
+						// 关闭本页返回上一页；返回时会触发上面的 beforeback → 通知父页面刷新
+						mui.back();
+				  	},
+				  	error:function(xhr,type,errorThrown){
+				  		
+				  	}
+				  });
+			    }) 
+			})
+			
+		</script>
+	</body>
+
+</html>

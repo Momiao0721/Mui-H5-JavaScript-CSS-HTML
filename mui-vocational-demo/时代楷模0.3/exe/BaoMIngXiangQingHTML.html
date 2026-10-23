@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="ToBu">
+			<!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">报名页-</h1> -->
+		</header>
+		
+		
+		<div class="mui-content" id="XiangQing">
+			
+			<!-- <div id="XiangQing" style="padding: 5px;">
+				
+				<div id="">
+					<img src="../IMG/2f03992397dda1443235049bf4b7d0a20cf4862b.jpg" style="height: 200px; width: 100%;">
+				</div>
+				<div id="">
+					<h4>123</h4>
+					<h5>123</h5>
+					<p class="mui-ellipsis">123</p>
+				</div> -->
+				
+				
+			
+		</div>
+			<nav class="mui-bar mui-bar-tab"  id="Xia">
+				<a class="mui-tab-item">
+				<!-- 
+				<p style="position: absolute;top: 28%; color: #000000; font-size: 15px; width: 100%;">人类：
+					<button type="button" BaoMingID="" style="position: absolute;right: 0; background-color: red; color: #DDDDDD; height: 50px; top:-7px; width: 180px;">按钮</button>
+				</p> -->
+				</a>
+				
+			</nav>
+		<!-- <nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">电话</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">邮件</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">设置</span>
+			</a>
+		</nav> -->
+		
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaiMOngID') || extra.id
+				
+				console.log(id)
+				
+				function YeiMian(){
+					
+				mui.ajax(http + '/api/activity/' + id,{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if(data.code == 200){
+							
+							var ToBuHTML = ''
+							var XiangQingHTML = '';
+							
+							ToBuHTML += `
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">报名页-${data.data.activityName}</h1>`
+			
+						XiangQingHTML += `<div style="padding: 5px;">
+				
+				<div id="">
+					<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%;">
+				</div>
+				<div id="">
+					<h4>${data.data.activityName}</h4>
+					<h5>${data.data.startEndTime}</h5>
+					<p>${data.data.activityDetail}</p>
+				</div>
+			
+			</div>`
+			
+			var XiaHTML = '';
+			
+			// 【改】给报名人数单独包一个 span(id=RenShu)，这样报名成功后只刷新这个数字
+			XiaHTML += `<p style="position: absolute;top: 28%; color: #000000; font-size: 15px; width: 100%;">人类：<span id="RenShu">${data.data.applyNum}</span>
+					<button type="button" BaoMingID="${data.data.id}" style="position: absolute;right: 0; background-color: red; color: #DDDDDD; height: 50px; top:-7px; width: 180px;" id="BaoMing">按钮</button>
+				</p>`
+			
+			
+			
+							document.getElementById('ToBu').innerHTML = ToBuHTML
+							document.getElementById('XiangQing').innerHTML = XiangQingHTML
+							document.getElementById('Xia').innerHTML = XiaHTML
+							
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				}
+				YeiMian()
+				
+				// 【改】新增 GengXing：重新拉一次活动详情，只把"报名人数"更新掉
+				//       （原来代码里调用了 GengXing() 但函数没写，报 GengXing is not defined）
+				function GengXing(){
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+							
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							if (data.code == 200) {
+								document.getElementById('RenShu').innerHTML = data.data.applyNum
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							console.log('刷新人数失败：', type, xhr.status)
+						}
+					});
+				}
+				
+				// GaoMing-----------------------------------------------------------
+				
+				mui('#Xia').on('tap','#BaoMing',function(){
+					
+					mui.confirm('你确定报名么','报名',['是','否'],function(e){
+						
+						// 【改】按钮数组 ['是','否'] 的索引只有 0 和 1，
+						//       原来写 e.index != 2 永远成立（点"否"也会报名），改成 == 0 只认"是"
+						if (e.index == 0) {
+							
+							// 【改】路径后面不要再拼 id（文档里就是 /api/activity/apply，由 body 传 activityId）
+							mui.ajax(http + '/api/activity/apply',{
+								data:{
+									activityId:id
+								},
+								headers:{
+									// 【改】POST 必须声明 json，否则会报 Content type 'application/x-www-form-urlencoded' not supported
+									'Content-Type':'application/json',
+									'Authorization':localStorage.getItem('token')
+								},
+								
+								dataType:'json',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								success:function(data){
+									// 【改】原来 log 里的 post 没定义，会报 ReferenceError
+									console.log(JSON.stringify(data))
+									if(data.code == 200){
+										
+									mui.toast('报名成功')
+									var btn = document.getElementById('BaoMing')
+									btn.setAttribute('disabled','disabled')
+									btn.classList.add('mui-disabled')
+									GengXing()
+									}else{
+										// 【改】把后端返回的原因显示出来，方便排查
+										mui.toast(data.msg || '报名失败')
+									}
+								},
+								error:function(xhr,type,errorThrown){
+									console.log('报名失败：', type, xhr.status)
+								}
+							});
+						}
+						
+					}, )
+					
+				})
+				
+				
+				
+			})
+			
+		</script>
+	</body>
+
+</html>

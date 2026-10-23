@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">公益活动</h1>
+		</header>
+		<div class="mui-content">
+			
+			
+			<div class="mui-slider">
+				<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item" href="#item1">活动报名</a>
+					<a class="mui-control-item" href="#item2">公益项目</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1" class="mui-slider-item mui-control-content mui-active">
+							<ul class="mui-table-view" id="Gyhd">
+								
+								<!-- <li style="padding: 5px;">
+										<img src="../IMG/2f03992397dda1443235049bf4b7d0a20cf4862b.jpg" style="height: 200px; width: 100%;">
+										<div class="mui-media-body">
+											<h4>活动名称:</h4>
+											<h5>开始与结束时间</h5>
+											<p class="mui-ellipsis">活动详情</p>
+										</div>
+										<hr >
+										<p style="color: #000000;">人类:
+										<button type="button" BaiMOngID="" class="mui-btn mui-btn-red" style="position: absolute;right: 5%; border-radius: 30px;">报名</button>
+										</p>
+								</li> -->
+								
+							</ul>
+					</div>
+					<div id="item2" class="mui-slider-item mui-control-content">
+						<ul class="mui-table-view" id="GYXM">
+								
+								<!-- <li style="padding: 5px;">
+										<img src="../IMG/2f03992397dda1443235049bf4b7d0a20cf4862b.jpg" style="height: 200px; width: 100%;">
+										<div class="mui-media-body">
+											<h4>活动名称:</h4>
+											<h5>开始与结束时间</h5>
+											<p class="mui-ellipsis">活动详情</p>
+										</div>
+										<hr >
+										<p style="color: #000000;">人类:
+										<button type="button" BaiMOngID="" class="mui-btn mui-btn-red" style="position: absolute;right: 5%; border-radius: 30px;">报名</button>
+										</p>
+								</li> -->
+								
+						</ul>
+					</div>
+				</div>
+			</div>
+			
+
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+			    
+				
+				function GongYihuoDongJS(){
+					
+				mui.ajax(http + '/api/activity/list',{
+					data:{
+						
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+					
+					dataType:'json',//服务器返回json格式数据
+					type:'get',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					success:function(data){
+						if(data.code == 200){
+							var GongYiHuoDingHTML = ''
+							
+							for (var i = 0 ; i < data.rows.length ; i++) {
+								
+								GongYiHuoDingHTML += `<li style="padding: 5px;">
+						<img src="${httpimg + data.rows[i].imgUrl}" style="height: 200px; width: 100%;">
+						<div class="mui-media-body">
+							<h4>${data.rows[i].activityName}</h4>
+							<h5>${data.rows[i].startEndTime}</h5>
+							<p class="mui-ellipsis">${data.rows[i].briefIntroduction}</p>
+						</div>
+						<hr >
+						<p style="color: #000000;">人类:${data.rows[i].applyNum}
+						<button type="button" BaiMOngID="${data.rows[i].id}" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 5%; border-radius: 30px;">报名</button>
+						</p>
+				</li>`
+								
+							}
+							document.getElementById('Gyhd').innerHTML = GongYiHuoDingHTML;
+							
+							var BaoMingList = document.querySelectorAll('#Gyhd .mui-media')
+							
+							for (var j = 0 ; j < BaoMingList.length ; j++) {
+								
+								(function(BaoMingXiangQing){
+									BaoMingXiangQing.addEventListener('tap',function(){
+										
+										var id = this.getAttribute('BaiMOngID')
+										
+										console.log(id)
+										
+										if(!id)return;
+										
+										plus.storage.setItem('BaiMOngID',id)
+										mui.openWindow('BaoMIngXiangQingHTML.html',{
+											extras:{
+												id:id
+											}
+										})
+										
+									})
+								})(BaoMingList[j])
+								
+							}
+							
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						
+					}
+				});
+				}
+				GongYihuoDongJS()
+				
+				function GongYiXiangMu(){
+					
+					mui.ajax(http + '/api/public/projects/list',{
+						data:{
+							// categoryId:id
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						
+						dataType:'json',//服务器返回json格式数据
+						type:'get',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						success:function(data){
+							console.log(JSON.stringify(data))
+							if (data.code == 200) {
+								
+								var GongYiXiangMuHTML = '';
+								
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									
+									GongYiXiangMuHTML += `<li style="padding: 5px;">
+										<img src="${httpimg + data.rows[i].imgUrl}" style="height: 200px; width: 100%;">
+										<div class="mui-media-body">
+											<h4>${data.rows[i].projectTitle}</h4>
+											<h5>${data.rows[i].receivingInstitution}</h5>
+											<p class="mui-ellipsis">${data.rows[i].introduce}</p>
+										</div>
+										<hr >
+										<p style="color: #000000;">人类:${data.rows[i].feedbackNum}
+										<button type="button" BaiMOngIDD="${data.rows[i].id}" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 5%; border-radius: 30px;">报名</button>
+										</p>
+								</li>`
+									
+								}
+								document.getElementById('GYXM').innerHTML = GongYiXiangMuHTML;
+								
+								var xiangQingXianngMu = document.querySelectorAll('#GYXM .mui-media')
+								
+								for(var j = 0 ; j < xiangQingXianngMu.length ; j++){
+									
+									(function(XianngMuXiangQing){
+										XianngMuXiangQing.addEventListener('tap',function(){
+											
+										var id = this.getAttribute('BaiMOngIDD',id)
+										
+										console.log(id)
+										
+										if(!id)return;
+										
+										mui.openWindow('GongYiXiangMuXiangQing.html',{
+											extras:{
+												id:id
+											}
+										})
+										
+										})
+									})(xiangQingXianngMu[j])
+									
+								}
+								
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							
+						}
+					});
+					
+				}
+				GongYiXiangMu()
+			})
+		</script>
+	</body>
+
+</html>

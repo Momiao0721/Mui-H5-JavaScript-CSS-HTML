@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 引入 mui 的样式文件 -->
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<!-- 顶部导航栏 -->
+		<header class="mui-bar mui-bar-nav">
+			<!-- mui-action-back：mui 自带返回按钮，点一下关闭本页回到上一页 -->
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<!-- 本页标题：说明这是"编辑笔记"的子页面 -->
+			<h1 class="mui-title">编辑笔记</h1>
+		</header>
+		
+		<!-- mui-content：页面主体内容区 -->
+		<div class="mui-content">
+			<div class="mui-card">
+			
+				<div class="mui-card-content" style="height: 200px;width: 100%;">
+					<!-- 标题输入行 -->
+					<div class="mui-input-row">
+						<label>标题</label>
+						<!-- id="title"：既要"回填原标题"，提交时又要从这里取新标题 -->
+						<input type="text" id="title" class="mui-input-clear" placeholder="请输入标题">
+					</div>
+					<!-- 内容输入行 -->
+					<div class="mui-input-row">
+						<label>内容</label>
+						<!-- id="content"：既要"回填原内容"，提交时又要从这里取新内容 -->
+						<textarea rows="6" cols="" id="content"></textarea>
+					</div>
+				</div>
+				<!-- 提交按钮的容器：id="tj" -->
+				<div id="tj" class="mui-card-footer">
+					<a class="mui-card-link" style="margin: -10px auto;">提交</a>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../js/http.js"></script>
+		<!-- http.js 里定义了 http（接口地址前缀）和 httpimg（图片前缀） -->
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+
+			// mui.init()：初始化 mui
+			mui.init(
+			{
+				// beforeback：本页面"返回之前"触发的钩子
+				beforeback:function () {
+					// 获取父页面的 webview（谁打开的我 → 就是 xd.html）
+					var v=plus.webview.currentWebview().opener();
+					// 触发父页面的自定义事件（refresh），从而让父页面刷新
+					mui.fire(v,"refresh");
+					// 返回 true，继续页面关闭逻辑
+					return true;
+				}
+			}
+			)
+
+			// plusReady：H5+ 环境准备好后执行
+			mui.plusReady(function () {
+
+			    // ===== 第一步：获取笔记信息并显示 =====
+
+				// 【父子传参的关键】父页面点击"编辑笔记"时传了 3 个 extras：
+				//   bjId（笔记id）、bjTitle（原笔记标题）、bjContent（原笔记内容）
+				// extras 里的字段会挂在本页 webview 对象上，所以这样就能取到
+				var bjId = plus.webview.currentWebview().bjId;
+
+				// 把传来的原标题回填到输入框里，用户就能看到并修改
+				document.getElementById('title').value = plus.webview.currentWebview().bjTitle;
+
+				// 把传来的原内容回填到文本域里
+				document.getElementById('content').value = plus.webview.currentWebview().bjContent;
+
+				// ===== 第二步：修改并提交 =====
+
+				// 事件委托：在 #tj 容器里点到 .mui-card-link 才触发
+				mui('#tj').on('tap','.mui-card-link',function(){
+
+				  // 取用户改完之后的标题和内容
+				  var bjTitle = document.getElementById('title').value;
+				  var bjContent = document.getElementById('content').value;
+				  
+				  // 发送请求：修改笔记
+				  mui.ajax(http+'/api/history/note',{
+				  	// data：要提交给后端的参数
+				  	data:{
+				  		// noteId：改的是哪一条笔记（用父页面传来的 bjId）
+				  		noteId:bjId,
+				  		noteTitle:bjTitle,
+						noteContent:bjContent
+				  	},
+				  	dataType:'json',//服务器返回json格式数据
+				  	type:'PUT',//HTTP请求类型（编辑用 PUT）
+				  	timeout:10000,//超时时间设置为10秒；
+				  	headers:{
+				  		// 【关键】PUT 也必须声明 json，否则后端报 Content type 不支持
+				  		'Content-Type':'application/json',
+						'Authorization':localStorage.getItem('token')
+				  	},
+				  	success:function(data){
+				  		// console.log(data.code);
+						if (data.code == 200) {
+				  			// 修改成功，弹提示
+				  			mui.alert('修改成功');
+							// 返回上一页（会触发 beforeback → 通知父页面刷新）
+							mui.back();
+				  		}
+				  	},
+				  	error:function(xhr,type,errorThrown){
+				  		
+				  	}
+				  });
+				}) 
+				
+				
+				// 跳回心得页面
+			})
+		</script>
+	</body>
+
+</html>
