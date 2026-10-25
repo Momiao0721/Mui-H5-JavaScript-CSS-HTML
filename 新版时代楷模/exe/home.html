@@ -1,0 +1,411 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		
+		
+		<div class="mui-off-canvas-wrap mui-draggable">
+		  
+		  <aside class="mui-off-canvas-left" id="offCanvasSide">
+			<div class="mui-scroll-wrapper">
+			  <div class="mui-scroll">
+				
+					
+					
+					<div class="mui-content">
+						
+							
+							<h3>
+							功能栏
+							</h3>
+						<div id="" style="background-color: #333333; height: 10px;">
+							
+						</div>
+						<div style="height: 40px; background-color: #DDDDDD;" id="BaoMing">
+							<h3 >
+							报名
+							</h3>
+						</div>
+						<div id="" style="background-color: #333333; height: 10px;">
+							
+						</div>
+						<div style="height: 30px; background-color: #DDDDDD;" id="WoDeXiangXI">
+							<h3 >
+							我的信息
+							</h3>
+						</div>
+						<div id="" style="background-color: #333333; height: 10px;">
+							
+						</div>
+						<div style="height: 30px; background-color: #DDDDDD;" id="SeiZhi">
+							<h3 >
+							设置
+							</h3>
+						</div>
+						<div id="" style="background-color: #333333; height: 10px;">
+							
+						</div>
+						<div style="height: 30px; background-color: #DDDDDD;" id="">
+							<h3 >
+							产品信息号
+							</h3>
+						</div>
+						<div id="" style="background-color: #333333; height: 10px;">
+							
+						</div>
+						
+					</div>
+					
+					
+			  </div>
+			</div>
+		  </aside>
+		  
+		  <div class="mui-inner-wrap">
+			
+			<header class="mui-bar mui-bar-nav">
+			  <a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left"  href="#offCanvasSide" ></a>
+			  <h1 class="mui-title">标题</h1>
+			</header>
+			
+			<div class="mui-content mui-scroll-wrapper">
+			  <div class="mui-scroll">
+				
+				 	
+					
+					
+					
+					<div id="slider" class="mui-slider" >
+										  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+											  
+											
+					
+											
+											
+											
+											
+											
+					
+										  <div class="mui-slider-indicator" id="lbt2"></div>
+											
+										</div>
+										
+										
+										
+										<ul class="mui-table-view mui-grid-view mui-grid-9" id="jgg">
+											
+										
+										
+											</ul>
+										
+										
+										
+										
+										<ul class="mui-table-view" id="kmlb">
+											
+											
+											
+												
+												
+											
+										</ul>
+					
+					<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="GengXing">更新</button>
+					
+			  </div>
+			</div> 
+			<div class="mui-off-canvas-backdrop"></div>
+		  </div> 
+		</div>
+		
+		
+		
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+
+			mui.init()
+
+			mui('.mui-scroll-wrapper').scroll({
+			    deceleration: 1.0005,
+			    bounce: true
+			})
+
+			mui.plusReady(function () {
+
+				function LuenBuoTu(){
+
+					mui.ajax(http + '/api/building/banner/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var lbtHTML = '';
+								var lbtXIa = '';
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+						  <a href="#">
+							<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+						  </a>
+						</div>`
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									lbtHTML += `<div class="mui-slider-item">
+						  <a href="#">
+							<img src="${httpimg + data.rows[i].imgUrl}">
+						  </a>
+						</div>`
+
+									lbtXIa += `<div class="mui-indicator"></div>`
+
+								}
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+						  <a href="#">
+							<img src="${httpimg + data.rows[0].imgUrl}">
+						  </a>
+						</div>`
+
+								document.getElementById('lbt1').innerHTML = lbtHTML;
+								document.getElementById('lbt2').innerHTML = lbtXIa;
+
+							}
+							mui('.mui-slider').slider({interval:3000})
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LuenBuoTu()
+
+				function jgg(){
+
+					var JGGYeiMina = [{
+						name:'li_1',
+						id:'li_1',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					{
+						name:'li_2',
+						id:'li_2',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					{
+						name:'li_3',
+						id:'li_3',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					{
+						name:'li_4',
+						id:'li_4',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					{
+						name:'li_5',
+						id:'li_5',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					{
+						name:'li_6',
+						id:'li_6',
+						img:'../IMG/4bc0706dd1a65.jpg'
+					},
+					]
+
+					var htmljgg = '';
+					for (var i = 0 ; i < JGGYeiMina.length ; i++) {
+
+						htmljgg += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#" id="${JGGYeiMina[i].id}">
+							<img src="${JGGYeiMina[i].img}" style="height: 50px; width: 50px; border-radius: 50px;">
+							<div class="mui-media-body">${JGGYeiMina[i].name}</div>
+						</a>
+					</li>`
+
+					}
+
+					document.getElementById('jgg').innerHTML = htmljgg;
+
+					document.getElementById('li_1').addEventListener('tap',function(){
+
+						mui.openWindow('li_1.html')
+
+					})
+
+					document.getElementById('li_2').addEventListener('tap',function(){
+
+						mui.openWindow('li_2.html')
+
+					})
+
+					document.getElementById('li_3').addEventListener('tap',function(){
+
+						mui.openWindow('li_3.html')
+
+					})
+
+					document.getElementById('li_4').addEventListener('tap',function(){
+
+						mui.openWindow('li_4.html')
+
+					})
+
+					document.getElementById('li_5').addEventListener('tap',function(){
+
+						mui.openWindow('li_5.html')
+
+					})
+
+					document.getElementById('li_6').addEventListener('tap',function(){
+
+						mui.openWindow('li_6.html')
+
+					})
+
+				}
+				jgg()
+
+				function Kmlb(){
+
+					mui.ajax(http + '/api/model/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+
+								kmlbQuan = data.rows;
+								kmlbWuTiao = 5;
+								GengXingHTML()
+
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+					function GengXingHTML(){
+
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						}
+
+						var kmlbHTML = '';
+
+						for (var i = 0 ; i < kmlbWuTiao; i++) {
+
+							if (i % 2 == 0) {
+
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+												<a href="javascript:;">
+													<img class="mui-media-object mui-pull-left" style="height: 50px;" src="${httpimg + kmlbQuan[i].imgUrl}">
+													<div class="mui-media-body">
+														<h4>${kmlbQuan[i].title}</h4>
+														<h5>${kmlbQuan[i].name}</h5>
+														<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+													</div>
+												</a>
+											</li>`
+
+							} else{
+
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+													<a href="javascript:;">
+														<img class="mui-media-object mui-pull-right" style="height: 50px;" src="${httpimg + kmlbQuan[i].imgUrl}">
+														<div class="mui-media-body">
+															<h4>${kmlbQuan[i].title}</h4>
+															<h5>${kmlbQuan[i].name}</h5>
+															<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+														</div>
+													</a>
+												</li>`
+
+							}
+
+						}
+
+							document.getElementById('kmlb').innerHTML = kmlbHTML
+					}
+
+					document.getElementById('GengXing').addEventListener('tap',function(){
+
+						kmlbWuTiao += 5;
+						GengXingHTML()
+
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							this.innerHTML = '更新成功'
+							this.getAttribute('disabled','disabled')
+							this.classList.add('mui-disabled')
+						}
+
+					})
+
+					document.getElementById('GengXing').addEventListener('tap',function(){
+
+						kmlbWuTiao += 5;
+						GengXingHTML()
+
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							this.innerHTML = '更新成功'
+							this.getAttribute('disabled','disabled')
+							this.classList.add('mui-disabled')
+						}
+
+					})
+
+				}
+				Kmlb()
+
+				document.getElementById('WoDeXiangXI').addEventListener('tap',function(){
+
+					mui.openWindow({
+						url:'WoDeXiangXi.html',
+						id:'WoDeXiangXi'
+					})
+
+				})
+
+				document.getElementById('SeiZhi').addEventListener('tap',function(){
+
+					mui.openWindow({
+						url:'SeiZhi.html',
+						id:'SeiZhi'
+					})
+
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

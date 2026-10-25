@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+
+	
+	
+<body>
+	<div style="position: relative; padding: 30px;" class="mui-content">
+		
+		<h3 style="position: relative; font-size: 30px; color: red; top: 8px;">时代楷模</h3>
+		<p style="position: relative; font-size: 20px; color: black; top: 8px;">登录</p>
+		
+	</div>
+		
+	<div class="mui-content" style="position: relative; top: 10px; padding: 30px;" >
+		
+				<p>账号</p>
+				<input type="text" class="mui-input-clear" placeholder="请输入账号" style="border-radius: 30px; background-color: rgba(0,0,0,);" id="username">
+		
+				<p>密码</p>
+				<input type="text" class="mui-input-clear" placeholder="请输入密码" style="border-radius: 30px;" id="password">
+		
+	</div>
+	
+	<div class="mui-content" style="padding: 30px; position: relative; top: -35px;" id="but">
+		
+		<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="butt" style="width:50%; border-radius: 60px; height: 50px;">登录</button>
+		
+	</div>
+	
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+
+		mui.plusReady(function () {
+
+			mui('#but').on('tap','#butt',function(){
+
+				var username = document.getElementById('username').value;
+				var password = document.getElementById('password').value;
+
+				if (username == '' || password == '') {
+					mui.toast('账号/密码不能为空')
+				} else{
+					mui.ajax(http + '/api/login',{
+						data:{
+							username:username,
+							password:password
+						},
+						headers:{
+							'Content-Type':'application/json'
+						},
+
+						dataType:'json',
+						type:'post',
+						timeout:10000,
+						success:function(data){
+							console . log ( JSON . stringify (data));
+							if (data.code == 200) {
+
+								mui.toast('欢迎' + username + '登录成功')
+								localStorage.setItem('token',data.token)
+
+								mui.openWindow({
+									url:'./exe/page.html'
+								})
+
+							}else{
+
+								mui.toast('账号/密码错误')
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+							mui.toast('网路错误')
+						}
+					});
+				}
+
+			})
+
+		})
+
+    </script>
+</body>
+</html>

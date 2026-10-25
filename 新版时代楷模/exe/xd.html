@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		
+		<div class="mui-content" id="NeiRoimg">
+			
+		
+			
+			
+			
+		</div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function NEiRong(){
+
+					mui.ajax(http + '/api/history/list',{
+						data:{
+							userId : 1
+						},
+							'Content-Type':'application/json',
+						headers:{
+
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var XDEHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									XDEHTML += `<div id="" style="padding: 6px; background-color: #007AFF; border-radius: 50px;">
+
+			<div id="NeiRing" style="position: relative; padding: 6px;">
+				<h4>内容:${data.rows[i].title}</h4>
+				<h5>详情:${data.rows[i].content}</h5>
+				<hr >
+				<div id="BianJI" style="height: 10px;">
+
+				<p class="mui-media" XiangQid="${data.rows[i].id}" style="height: 10px; position: absolute; left: 48%; color: #000000;">编辑</p>
+				</div>
+			</div>
+
+			</div>
+			<br>
+			`
+
+								}
+
+								document.getElementById('NeiRoimg').innerHTML = XDEHTML
+
+								var BianJIXIangQing = document.querySelectorAll('#NeiRoimg .mui-media')
+
+								for (var j = 0 ; j < BianJIXIangQing.length ; j++) {
+
+									(function (yeiMianXiangQing){
+
+										yeiMianXiangQing.addEventListener('tap',function(){
+											var id = this.getAttribute('XiangQid')
+
+											console.log(id);
+
+												plus.storage.setItem('BaiMOngID',id)
+										mui.openWindow('BaoMIngXiangQingHTML.html',{
+											extras:{
+												id:id
+											}
+										})
+										})
+
+									})( BianJIXIangQing [j]);
+
+								}
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				NEiRong()
+			})
+		</script>
+	</body>
+
+</html>
