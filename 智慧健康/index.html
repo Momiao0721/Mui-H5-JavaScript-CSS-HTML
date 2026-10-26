@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+	<body>
+
+		<div style="height: 40px;">
+
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+		</div>
+		
+		<div class="mui-content">
+			
+			<h4 style="font-size: 40px;">账号密码登录</h4>
+			<p style="font-size: 20px;">欢迎使用智慧健康</p>
+			
+		</div>
+		
+		<div style="height: 50px;">
+			
+		</div>
+		
+		<div id="" style="padding: 10px;">
+			<p>手机号码</p>
+			<input type="text" class="mui-input-clear" placeholder="请输入账号" id="username" style="border-radius: 50px;">
+			
+			<p>密码</p>
+			<input type="text" class="mui-input-clear" placeholder="请输入密码" id="password" style="border-radius: 50px;">
+		</div>
+		
+		<div id="" style="position: relative;top: -10px;">
+			
+			<div class="mui-input-row mui-checkbox mui-left">
+			  <label style="font-size: 13px;" id="YongHuYingSiXieYi">我已阅读并同意《用户隐私政策》</label>
+			  <input name="checkbox1" type="checkbox" checked >
+			</div>
+			
+			<div class="mui-content">
+				<p style="position: absolute;right: 20px; top: 8px; color: #0062CC;" id="WangJiMiMai">忘记密码？</p>
+			</div>
+			
+		</div>
+		
+		
+		<div id="but" class="mui-content" style="padding: 10px;">
+			
+			<button id="butt" type="button" class="mui-btn mui-btn-blue mui-btn-block" style="border-radius: 20px;">登录</button>
+			
+		</div>
+		
+		<div style="padding: 5px;">
+			<p style="color: #0062CC; position: absolute;left: 5%;" id="MianMiDengLuuu">免密登录</p>
+			<p style="color: #0062CC; position: absolute;right: 5%;" id="MianMiDengLu">注册新用户</p>
+		</div>
+		
+		<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+			mui.plusReady(function () {
+
+				mui('#but').on('tap','#butt',function(){
+
+				var username = document.getElementById('username').value;
+				var password = document.getElementById('password').value;
+
+				if(username == '' || password == ''){
+					mui.toast('账号/密码不能为空')
+				}else{
+					mui.ajax(http + '/api/login',{
+						data:{
+							username:username,
+							password:password
+						},
+						headers:{
+							'Content-Type':'application/json'
+						},
+
+						dataType:'json',
+						type:'post',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if(data.code == 200){
+								mui.toast('欢迎')
+								localStorage.setItem('token',data.token)
+								mui.openWindow({
+									url:'./exe/page.html'
+								})
+							}else{
+								mui.toast('账号/密码错误')
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+
+				})
+
+				document.getElementById('YongHuYingSiXieYi').addEventListener('tap',function(){
+					mui.openWindow({
+						url:'YongHuYingSiXieYi.html'
+					})
+				})
+
+				document.getElementById('WangJiMiMai').addEventListener('tap',function(){
+					mui.openWindow({
+						url:'WangJiMiMai.html'
+					})
+				})
+
+				document.getElementById('MianMiDengLu').addEventListener('tap',function(){
+					mui.openWindow({
+						url:'MianMiDengLu.html'
+					})
+				})
+
+				document.getElementById('MianMiDengLuuu').addEventListener('tap',function(){
+					mui.openWindow({
+						url:'MianMiDengLuuu.html'
+					})
+				})
+
+			})
+		</script>
+	</body>
+</html>

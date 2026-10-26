@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+	</head>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">用户隐私协议</h1>
+	</header>
+		<div class="mui-content">
+			
+			<h3>用户隐私协议</h3>
+			<div id="">
+				<h4>内容:</h4>
+				<p>中职移动应用开发赛项练习项目，基于DCloud MUI框架开发（Exercise project for the Vocational Mobile Application Development Competition, developed using the DCloud MUI framework）</p>
+			</div>
+			
+		</div>
+		
+		
+	<body>
+		
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active">
+				<button type="button" class="mui-btn mui-btn-blue mui-btn-block" id="YueDu">我已阅读用户隐私协议</button>
+			</a>
+			
+		</nav>
+		
+		<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				document.getElementById('YueDu').addEventListener('tap',function(){
+
+					mui.back()
+
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+		
+		<style type="text/css">
+			
+			* { 
+				box-sizing : border-box;
+			}
+			body {
+				max-width : 100% ; overflow-x : hidden;
+			}
+			
+		</style>
+	<body>
+		<header class="mui-bar mui-bar-nav" style="background-color: #03c498;height: 100px;">
+			<h1 class="" style="font-size: 25px; padding: 5px; color: #DDDDDD;">首页</h1>
+			<div style="position: absolute;top: 40px;">
+				<input class="mui-input-clear" style="border-radius: 10px; padding: 15px; width: 120%; height: 50px;" placeholder="搜索" id="SOhuo">
+			</div>
+		</header>
+		
+		<div class="mui-content" style="width: 100%; position: relative;top: 60px;">
+			
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+				
+				
+				
+				
+				
+				
+				
+			  <div class="mui-slider-indicator" id="lbt2"></div>
+				
+			</div>
+			<ul class="mui-table-view mui-grid-view mui-grid-9">
+				
+			<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+				<a href="#">
+					<span class="mui-icon mui-icon-home"></span>
+					<div class="mui-media-body">回收分类</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+				<a href="#">
+					<span class="mui-icon mui-icon-home"></span>
+					<div class="mui-media-body">旧物去向</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+				<a href="#">
+					<span class="mui-icon mui-icon-home"></span>
+					<div class="mui-media-body">附近回收机</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+				<a href="#">
+					<span class="mui-icon mui-icon-home"></span>
+					<div class="mui-media-body">积分商城</div>
+				</a>
+			</li>
+			
+				</ul>
+			
+
+			<div id="" style="width: 100%; padding: 15px; background-color: #e3e3e3; border-radius: 50px;">
+				<button type="button" class="mui-btn mui-btn-green mui-btn-block" style="background-color: #01c296; border-radius: 50px; width: 100%;">预约上门回收</button>
+				<h4 class="mui-title" style="font-size: 15px;">王*花预约成功2021-07-21 10:15:20</h4>
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon mui-icon-home"></span>
+							<div style="font-size: 12px;">在线预约</div>
+							<p style="font-size: 10px;">-第一步1</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon mui-icon-home"></span>
+							<div style="font-size: 12px;">免费上门</div>
+							<p style="font-size: 10px;">-第二步2</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon mui-icon-home"></span>
+							<div style="font-size: 12px;">订单完成</div>
+							<p style="font-size: 10px;">-第三步3</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon mui-icon-home"></span>
+							<div style="font-size: 12px;">用户福利</div>
+							<p style="font-size: 10px;">第四步4</p>
+						</a>
+					</li>
+				</ul>
+			</div>
+			
+			
+			<div id="" style="padding: 10px; position: absolute;">
+				<p style="font-size: 25px; color: #16b590;">
+					|<p style="position: relative; left: 7px; top: -30px;  color: #000000; font-size: 20px;">爱心活动</p>
+				</p>
+				<div id="" style="background-color: #e3e3e3; border-radius: 20px; border-radius: 0px;">
+					
+				<img src="../IMG/de9509b7ce004.jpg" style="height: 200px; width: 100%; position: relative; border-radius: 50px; top: -20px;">
+				<p>100000积分=1袋猫粮，快来给动物们集物资</p>
+				</div>
+			</div>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function () {
+
+			function Lbt(){
+
+				mui.ajax(http + '/api/building/banner/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'get',
+					timeout:10000,
+					success:function(data){
+
+						if (data.code == 200) {
+
+							var lbtHTML = '';
+							var lbtXIa = '';
+
+							lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+				  </a>
+				</div>`
+
+						for (var i = 0 ; i < data.rows.length ; i++) {
+
+							lbtHTML += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}" style="height: 150px; width: 100%;">
+				  </a>
+				</div>`
+
+							lbtXIa += `<div class="mui-indicator"></div>`
+
+						}
+
+						lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].imgUrl}">
+				  </a>
+				</div>`
+
+							document.getElementById('lbt1').innerHTML = lbtHTML
+							document.getElementById('lbt2').innerHTML = lbtXIa
+
+						}
+						mui('.mui-slider').slider({interval:3000})
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+			}
+				Lbt()
+
+			document.getElementById('SOhuo').addEventListener('tap',function(){
+
+				mui.openWindow({
+					url:'BaiDuKuang.html'
+				})
+
+			})
+
+			})
+
+		</script>
+	</body>
+
+</html>

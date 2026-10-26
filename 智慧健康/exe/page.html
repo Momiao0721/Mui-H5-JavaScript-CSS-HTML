@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="gshs">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">公司回收</span>
+			</a>
+			<a class="mui-tab-item" id="sjfx">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">数据分析</span>
+			</a>
+			<a class="mui-tab-item" id="wd">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">我的</span>
+			</a>
+		</nav>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages:[{
+				  url:'wd.html',
+			      id:'wd',
+			      styles:{
+			        top:'0px',
+					bottom:'50px'
+			      },
+			      extras:{}
+				},
+				{
+				  url:'sjfx.html',
+				  id:'sjfx',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'gshs.html',
+				  id:'gshs',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'home.html',
+				  id:'home',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				]
+			})
+			mui.plusReady(function () {
+
+				function YeiMian(id){
+					plus.webview.getWebviewById(id).show()
+				}
+
+				document.getElementById('wd').addEventListener('tap',function(){
+					YeiMian('wd')
+				});
+
+				document.getElementById('sjfx').addEventListener('tap',function(){
+					YeiMian('sjfx')
+				});
+
+				document.getElementById('gshs').addEventListener('tap',function(){
+					YeiMian('gshs')
+				});
+
+				document.getElementById('home').addEventListener('tap',function(){
+					YeiMian('home')
+				});
+
+			})
+		</script>
+	</body>
+	
+	
+
+</html>
