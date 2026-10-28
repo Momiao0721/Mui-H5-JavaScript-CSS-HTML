@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title" style="color: red;">时代楷模</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="LBT" style="padding: 5px;">
+				
+				<div id="slider" class="mui-slider" >
+				  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+					
+					
+					
+					
+					
+					
+					
+					
+				  
+				  <div class="mui-slider-indicator" id="lbt2">
+					
+				  </div>
+				</div>
+				
+			</div>
+			
+			<br>
+			
+			<div style="padding: 5px;">
+				
+				<ul class="mui-table-view mui-grid-view mui-grid-9" id="JGG">
+					
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#" id="">
+						<img src="../IMG/4bc0706dd1a65.jpg" style="height: 30px; width: 30px; border-radius: 30px;">
+						<div class="mui-media-body">Home</div>
+					</a>
+				</li>
+				
+					</ul>
+				
+				
+			</div>
+			
+			
+			<div id="" style="padding: 5px;">
+				
+				<ul class="mui-table-view" id="kmlb">
+					
+					
+					
+				</ul>
+				
+				<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="GenXing">更新新闻</button>
+				
+			</div>
+			
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function YeiMianLBT(){
+
+					mui.ajax(http + '/api/building/banner/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'get',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var lbtHTML = '';
+								var lbtXia = '';
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					  <a href="#">
+						<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+					  </a>
+					</div>`
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									lbtHTML += `<div class="mui-slider-item">
+					  <a href="#">
+						<img src="${httpimg + data.rows[i].imgUrl}">
+					  </a>
+					</div>`
+									lbtXia += `<div class="mui-indicator"></div>`
+
+								}
+
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+					  <a href="#">
+						<img src="${httpimg + data.rows[0].imgUrl}">
+					  </a>
+					</div>
+				  </div>`
+
+								document.getElementById('lbt1').innerHTML = lbtHTML
+								document.getElementById('lbt2').innerHTML = lbtXia
+
+							}
+							mui('.mui-slider').slider({interval:3000})
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				YeiMianLBT()
+
+				function JGGJVAVS(){
+
+					var JGGYEiMian = [{
+						name:'li_1',
+						id:'li_1',
+					},
+					{
+						name:'li_2',
+						id:'li_2',
+					},
+					{
+						name:'li_3',
+						id:'li_3',
+					},
+					{
+						name:'li_4',
+						id:'li_4',
+					},
+					{
+						name:'li_5',
+						id:'li_5',
+					},
+					{
+						name:'li_6',
+						id:'li_6',
+					},
+					]
+
+					var JGGHTML = '';
+
+					for (var i = 0 ; i < JGGYEiMian.length ; i++) {
+
+						JGGHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#" id="${JGGYEiMian[i].id}">
+						<img src="../IMG/4bc0706dd1a65.jpg" style="height: 30px; width: 30px; border-radius: 30px;">
+						<div class="mui-media-body">${JGGYEiMian[i].id}</div>
+					</a>
+				</li>`
+
+					}
+
+					document.getElementById('JGG').innerHTML = JGGHTML
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					});
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					});
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					});
+					document.getElementById('li_4').addEventListener('tap',function(){
+						mui.openWindow('li_4.html')
+					});
+					document.getElementById('li_5').addEventListener('tap',function(){
+						mui.openWindow('li_5.html')
+					});
+					document.getElementById('li_6').addEventListener('tap',function(){
+						mui.openWindow('li_6.html')
+					});
+				}
+				JGGJVAVS()
+
+				function kmLIst(){
+
+					mui.ajax(http + '/api/model/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								kmlbQuan = data.rows;
+								kmlbWuTiao = 5
+								GengXing()
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+					function GengXing(){
+
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						}
+
+						var kmlbHTml = '';
+						for (var i = 0 ; i < kmlbWuTiao ; i++) {
+
+							kmlbHTml += `<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<img class="mui-media-object mui-pull-left" src="${httpimg + kmlbQuan[i].imgUrl}">
+							<div class="mui-media-body">
+								<h4>${kmlbQuan[i].title}</h4>
+								<h5>${kmlbQuan[i].name}</h5>
+								<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+							</div>
+						</a>
+					</li>`
+
+						}
+
+						document.getElementById('kmlb').innerHTML = kmlbHTml
+
+						document.getElementById('GenXing').addEventListener('tap',function(){
+
+							kmlbWuTiao += 5
+							GengXing()
+
+							if (kmlbWuTiao >= kmlbQuan.length) {
+								this.innerHTML = '更新成功'
+
+								this.setAttribute('disabled','disabled')
+
+								this.classList.add('mui-disabled')
+							}
+
+						})
+
+					}
+
+				}
+				kmLIst()
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="List" style="padding: 5px;">
+				
+				
+				
+			</div>
+			
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<div id="">
+				<button type="button" class="mui-btn mui-btn-red mui-btn-block">按钮</button>
+			</div>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LSJava(){
+
+					mui.ajax(http + '/api/history/list',{
+						data:{
+							userId:1
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var LsList = '';
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									LsList += `<div style="padding: 6px; border-radius: 30px; background-color: #fff4e1;">
+
+									<h4>${data.rows[i].userId}</h4>
+									<p>${data.rows[i].content}</p>
+									<hr >
+									<p id="BainJi" BiJiID="${data.rows[i].id}" class="mui-media">编辑</p>
+									<p id="DLT">删除</p>
+								</div>
+								<br>
+								`
+								}
+								document.getElementById('List').innerHTML = LsList
+								var BianJIList = document.querySelectorAll('#List .mui-media')
+
+								for (var j = 0 ; j < data.rows.length ; j++) {
+
+									(function(BianJI){
+
+										BianJI.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BiJiID')
+
+											console.log(id)
+
+											 mui.prompt('text','defaultText','',['取消','确认'],function (e) {
+											    if (e.index == 1) {
+
+													mui.ajax(http + '/api/history/note',{
+														data:{
+															noteId:id,
+															noteTitle:1,
+															noteContent:''
+														},
+														headers:{
+															'Content-Type':'application/json',
+
+															'Authorization':localStorage.getItem('token')
+														},
+
+														dataType:'json',
+														type:'PUT',
+														timeout:10000,
+														success:function(data){
+															console.log(data.code)
+															if (data.code == 200) {
+																console.log('编辑成功')
+																LSJava()
+															}else{
+																mui.toast('www')
+															}
+														},
+														error:function(xhr,type,errorThrown){
+															 console.log(JSON.stringify(data.rows[0]));
+														}
+													});
+
+											    } else{
+
+											    }
+											},'div')
+
+										})
+
+									})(BianJIList[j])
+
+								}
+
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LSJava()
+			})
+		</script>
+	</body>
+
+</html>

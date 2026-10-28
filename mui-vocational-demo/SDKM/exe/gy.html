@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">公益</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			<div id="GongYIListy" style="padding: 10px;">
+				
+				
+				
+			</div>
+			
+		</div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				mui.ajax(http + '/api/activity/list',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'GET',
+					timeout:10000,
+					success:function(data){
+
+						if (data.code == 200) {
+
+							var GongYiList = '';
+
+							for (var i = 0 ; i < data.rows.length ; i++) {
+
+								GongYiList+= `<div style="padding: 3px; background-color: #929292; border-radius: 30px;">
+					<img src="${httpimg + data.rows[i].imgUrl}" style="height: 200px; width: 100%; padding: 4px; border-radius: 30px;">
+
+					<div id="" style="padding: 4px;">
+						<h4>${data.rows[i].activityName}</h4>
+						<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+						<h5 style="color: #000000;" class="mui-ellipsis">${data.rows[i].briefIntroduction}</h5>
+					<hr >
+					<button type="button" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 5%; border-radius: 30px;" BaoMIingID="${data.rows[i].id}">报名</button>
+					<p style="color: #000000;">人数:${data.rows[i].applyNum}</p>
+					</div>
+
+				</div>
+				<br>
+				`
+
+							}
+
+							document.getElementById('GongYIListy').innerHTML = GongYiList
+							var BaiMingList = document.querySelectorAll('#GongYIListy .mui-media')
+
+							for (var i = 0 ; i < BaiMingList.length ; i++) {
+
+								(function(YeiMian){
+
+									YeiMian.addEventListener('tap',function(){
+
+									var id = this.getAttribute('BaoMIingID')
+
+									console.log(id)
+
+									plus.storage.setItem('BaoMIingID',id)
+
+									mui.openWindow({
+										url:'XiangQingGongYi.html',
+										id:'XiangQingGongYi',
+										extras:{
+											id:id
+										}
+									})
+
+									})
+								})(BaiMingList[i])
+
+							}
+
+						}
+
+					},
+					error:function(xhr,type,errorThrown){
+
+					}
+				});
+
+			})
+		</script>
+	</body>
+
+</html>
