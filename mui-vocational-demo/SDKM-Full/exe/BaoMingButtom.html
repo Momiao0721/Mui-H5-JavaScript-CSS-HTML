@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content">
+			<div id="Baoming">
+				
+
+			</div>
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingID') || extra.id
+
+				console.log(id)
+
+				function XiangQingGGG() {
+
+					mui.ajax(http + '/api/activity/' + id, {
+						data: {
+
+						},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+
+						dataType: 'json',
+						type: 'GET',
+						timeout: 10000,
+						success: function(data) {
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var XiangQing = '';
+
+								var baoMingBUTTON = localStorage.getItem('BaoMingJiYi' + id)
+
+								XiangQing += `
+					人:${data.data.applyNum}
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-block ${baoMingBUTTON ? ' mui-disabled' : ''}"  id="BaoMing">按钮</button>`
+
+								}
+								document.getElementById('Baoming').innerHTML = XiangQing
+
+								document.getElementById('BaoMing').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if (e.index == 1) {
+
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+
+												dataType:'json',
+												type:'post',
+												timeout:10000,
+												success:function(data){
+
+													if (data.code == 200) {
+														mui.toast('报名成功')
+
+														localStorage.setItem('BaoMingJiYi' + id , 1)
+
+														XiangQingGGG()
+
+													}
+
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+
+										} else{
+
+										}
+									},'div')
+
+								})
+
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+				}
+				XiangQingGGG()
+			})
+		</script>
+	</body>
+
+</html>

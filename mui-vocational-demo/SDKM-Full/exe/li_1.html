@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="List" style="padding: 5px;">
+				
+				
+				
+			</div>
+			
+		</div>
+		
+		<nav class="mui-bar mui-bar-tab">
+			
+			<a class="mui-tab-item mui-active">
+				
+				<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="zhengJia">增加</button>
+				
+			</a>
+		</nav>
+		
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function ListJvav(){
+
+					mui.ajax(http + '/api/history/list',{
+						data:{
+							userId:1
+						},
+						headers:{
+
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var LianXiList = '';
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									LianXiList += `<div class="mui-media-BiJiID" style="border-radius: 20px; background-color: #AAAAAA; padding: 10px;">
+
+					<h3>${data.rows[i].title}</h3>
+					<h4>${data.rows[i].content}</h4>
+					<hr >
+					<button SanCuID = '${data.rows[i].id}' BiJIID="${data.rows[i].wstudyNote}" id="ShangCi" type="button" class="mui-btn mui-btn-red mui-media-Dlt">删除</button>
+					
+					<button id="BianJi" BianJiID="${data.rows[i].id}" BianJiTitle="${data.rows[i].title}" BianJiContent="${data.rows[i].content}" type="button" class="mui-btn mui-btn-red mui-media-BianJi">编辑</button>
+				</div>
+				<br>
+
+				`
+
+								}
+
+								document.getElementById('List').innerHTML = LianXiList;
+
+								var ButtonList = document.querySelectorAll('#List .mui-media-Dlt')
+								var BianJiList = document.querySelectorAll('#List .mui-media-BianJi')
+
+								for (var j = 0 ; j < ButtonList.length ; j++) {
+
+									(function(DianJI){
+
+										DianJI.addEventListener('tap',function(){
+
+											var id = this.getAttribute('SanCuID')
+
+											console.log(id)
+
+											if (!id || id === 'undefined') {
+												mui.toast('缺少删除参数')
+												return
+											}
+
+											var url = http + '/api/history/note?studyHistoryId=' +
+												encodeURIComponent(id)
+
+											mui.ajax(url,{
+												headers:{
+													'Authorization':localStorage.getItem('token')
+												},
+
+												dataType:'json',
+												type:'DELETE',
+												timeout:10000,
+												success:function(data){
+													console.log(data.code)
+													console.log(data)
+													if(data.code == 200){
+														mui.toast('删除成功')
+														ListJvav()
+													} else {
+
+														mui.toast(data.msg || '删除失败')
+													}
+
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+
+										})
+
+									})(ButtonList[j])
+
+								}
+
+								for (var k = 0 ; k < BianJiList.length ; k++) {
+
+									(function(BianJiXiangingYei){
+
+										BianJiXiangingYei.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BianJiID')
+
+											var bjTitle = this.getAttribute('BianJiTitle')
+											var bjContent = this.getAttribute('BianJiContent')
+
+											console.log(id)
+
+											plus.storage.setItem('BianJiID',id)
+
+											mui.openWindow({
+												url:'BaiJiYei.html',
+												id:'BaiJiYei',
+												extras:{
+													id:id,
+													noteTitle:bjTitle,
+													noteContent:bjContent
+												}
+											})
+
+										})
+
+									})(BianJiList[k])
+
+								}
+
+								document.getElementById('zhengJia').addEventListener('tap',function(){
+
+									mui.openWindow({
+										url:'ZhenJia.html',
+										id:'ZhenJia'
+									})
+
+								})
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				ListJvav()
+
+			})
+		</script>
+	</body>
+
+</html>

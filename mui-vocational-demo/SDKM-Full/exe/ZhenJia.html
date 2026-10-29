@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">增加页</h1>
+		</header>
+		
+		<div class="mui-content">
+			
+			笔记标题
+			<textarea rows="" cols="" id="noteTitle"></textarea>
+			笔记内容
+			<textarea rows="" cols="" id="noteContent"></textarea>
+			
+			<button type="button" id="zhengJia" class="mui-btn mui-btn-blue mui-btn-block">按钮</button>
+			
+		</div>
+		
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function () {
+
+				document.getElementById('zhengJia').addEventListener('tap',function(){
+
+					var noteTitle = document.getElementById('noteTitle').value;
+					var noteContent = document.getElementById('noteContent').value;
+
+					mui.confirm('message','title',['取消','确认'],function (e) {
+						if (e.index == 1) {
+
+							mui.ajax(http + '/api/history/note',{
+								data:{
+									noteTitle:noteTitle,
+									noteContent:noteContent,
+								},
+								headers:{
+									'Content-Type':'application/json',
+									'Authorization':localStorage.getItem('token')
+								},
+
+								dataType:'json',
+								type:'POST',
+								timeout:10000,
+								success:function(data){
+
+									if (data.code == 200) {
+
+										mui.toast('成功')
+										mui.back()
+
+									}
+
+								},
+								error:function(xhr,type,errorThrown){
+
+								}
+							});
+						}
+					},'div')
+
+				})
+
+			})
+
+		</script>
+	</body>
+
+</html>

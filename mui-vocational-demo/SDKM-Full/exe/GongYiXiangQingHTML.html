@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="XiangQwing"></div>
+		</div>
+
+		<nav class="mui-bar mui-bar-tab">
+			<div id="DIBU">
+				<button type="button" class="mui-btn mui-btn-red"
+					style="width: 50%; position: absolute; right: 0; top: 0; height: 100%; border-radius: 0;"
+					id="Baoming">报名</button>
+				<p style="color: #000000; position: absolute; left: 15px; top: 15px;">人数:</p>
+			</div>
+		</nav>
+
+		<script src="../js/http.js"></script>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function () {
+				var extra = plus.webview.currentWebview().extra || {}
+
+				var id = extra.id || plus.storage.getItem('BaoMingID')
+
+				if (!id) {
+					mui.toast('缺少活动 id')
+					return
+				}
+
+				console.log(id)
+
+				bindBaoming()
+				Xia()
+
+				function Xia() {
+					mui.ajax(http + '/api/activity/' + id, {
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'GET',
+						timeout: 10000,
+						success: function (data) {
+							if (data.code != 200 || !data.data) {
+								return
+							}
+
+							var applied = localStorage.getItem('JIyi_' + id) === '1'
+
+							document.getElementById('DIBU').innerHTML = `
+								<button type="button" class="mui-btn mui-btn-red"
+									style="width: 50%; position: absolute; right: 0; top: 0; height: 100%; border-radius: 0;"
+									id="Baoming">${applied ? '已报名' : '报名'}</button>
+								<p style="color: #000000; position: absolute; left: 15px; top: 15px;">人数:${data.data.applyNum || 0}</p>`
+
+							if (applied) {
+								var b = document.getElementById('Baoming')
+								b.setAttribute('disabled', 'disabled')
+								b.classList.add('mui-disabled')
+							}
+						},
+						error: function () {
+							mui.toast('网络异常，请稍后重试')
+						}
+					})
+				}
+
+				function bindBaoming() {
+					mui('#DIBU').on('tap', '#Baoming', function () {
+						var btn = document.getElementById('Baoming')
+
+						if (!btn || btn.disabled || localStorage.getItem('JIyi_' + id) === '1') {
+							return
+						}
+
+						mui.confirm('你确定报名么', '报名', ['取消', '确认'], function (e) {
+							if (e.index !== 1) {
+								return
+							}
+
+							mui.ajax(http + '/api/activity/apply', {
+
+								data: JSON.stringify({
+									activityId: id
+								}),
+								headers: {
+									'Content-Type': 'application/json',
+									'Authorization': localStorage.getItem('token')
+								},
+								dataType: 'json',
+								type: 'POST',
+								timeout: 10000,
+								success: function (data) {
+									if (data.code == 200) {
+										mui.toast('报名成功')
+										localStorage.setItem('JIyi_' + id, '1')
+
+										btn.setAttribute('disabled', 'disabled')
+										btn.classList.add('mui-disabled')
+										btn.innerHTML = '已报名'
+
+										Xia()
+
+										var opener = plus.webview.currentWebview().opener()
+										if (opener) {
+											mui.fire(opener, 'refresh')
+										}
+									} else {
+										mui.toast(data.msg || '报名失败')
+									}
+								},
+								error: function () {
+									mui.toast('网络异常，请稍后重试')
+								}
+							})
+						}, 'div')
+					})
+				}
+
+				mui.ajax(http + '/api/activity/' + id, {
+					headers: {
+						'Authorization': localStorage.getItem('token')
+					},
+					dataType: 'json',
+					type: 'GET',
+					timeout: 10000,
+					success: function (data) {
+						if (data.code != 200 || !data.data) {
+							document.getElementById('XiangQwing').innerHTML =
+								'<p style="padding: 20px; text-align: center; color: #999;">活动加载失败</p>'
+							return
+						}
+
+						var detail = data.data
+						var imgHtml = detail.imgUrl
+							? '<img src="' + httpimg + detail.imgUrl + '" style="height: 200px; width: 100%;">'
+							: ''
+
+						document.getElementById('XiangQwing').innerHTML = `<div style="padding: 10px;">
+							${imgHtml}
+							<div style="padding: 5px;">
+								<h4>${detail.activityName || ''}</h4>
+								<h5 style="color: #000000;">${detail.startEndTime || ''}</h5>
+								<h5 style="color: #000000;">${detail.initiator || ''}</h5>
+								<h5 style="color: #000000;">${detail.activityDetail || ''}</h5>
+							</div>
+						</div>`
+					},
+					error: function () {
+						document.getElementById('XiangQwing').innerHTML =
+							'<p style="padding: 20px; text-align: center; color: #999;">网络异常，请稍后重试</p>'
+					}
+				})
+			})
+		</script>
+	</body>
+
+</html>

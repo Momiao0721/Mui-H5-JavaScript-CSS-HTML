@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 5px;" id="GongYI">
+				
+
+					
+					
+					
+
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			  mui.plusReady(function () {
+
+				  function BaoMingJVJV(){
+
+					  mui.ajax(http + '/api/activity/list',{
+					  	data:{
+
+					  	},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+					  	dataType:'json',
+					  	type:'GET',
+					  	timeout:10000,
+					  	success:function(data){
+
+							if (data.code == 200) {
+
+								var XingDeHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									XingDeHTML += `
+									<div style="padding: 3px; border-radius: 20px; background-color: #CCCCCC;">
+									<div>
+						<img src="${httpimg + data.rows[i].imgUrl}" style="border-radius: 50px; height: 200px; width: 100%;">
+
+						<div style="padding: 5px;">
+
+							<h4>${data.rows[i].activityName}</h4>
+							<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+							<h5 style="color: #000000;">${data.rows[i].initiator}</h5>
+							<hr >
+							<div id="">
+								<button type="button" BaoMingID="${data.rows[i].id}" class="mui-btn mui-btn-red mui-media" style="border-radius: 20px; position: absolute;right: 5%;">按钮</button>
+								<p>人:${data.rows[i].initiator}</p>
+							</div>
+						</div>
+
+					</div>
+					</div>
+					<hr >
+					`
+
+								}
+
+								document.getElementById('GongYI').innerHTML = XingDeHTML
+
+								var BaoMingList = document.querySelectorAll('#GongYI .mui-media')
+
+								for (var i = 0 ; i < BaoMingList.length ; i++) {
+
+									(function(BaoMIngYei){
+
+										BaoMIngYei.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BaoMingID')
+
+											console.log(id)
+
+											plus.storage.setItem('BaoMingID' , id)
+
+											mui.openWindow({
+												url:"BaoMingButtom.html",
+												id:'BaoMingButtom',
+												extras:{
+													id:id
+												}
+											})
+
+										})
+
+									})(BaoMingList[i])
+
+								}
+							}
+
+					  	},
+					  	error:function(xhr,type,errorThrown){
+
+					  	}
+					  });
+
+				  }
+				  BaoMingJVJV()
+
+			  })
+
+		</script>
+	</body>
+
+</html>
