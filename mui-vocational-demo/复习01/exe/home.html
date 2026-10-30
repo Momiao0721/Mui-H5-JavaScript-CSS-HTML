@@ -1,0 +1,312 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<style type="text/css">
+		*{
+			overflow-y: auto;
+		}
+	</style>
+	<body>
+		 
+		 
+		 <div class="mui-off-canvas-wrap mui-draggable mui-scalable">
+		   
+		   <aside class="mui-off-canvas-left mui-transitioning" id="offCanvasSide">
+		 	<div class="mui-scroll-wrapper">
+		 	  <div class="mui-scroll">
+		 		
+		 		
+		 	  </div>
+		 	</div>
+		   </aside>
+		   
+		   <div class="mui-inner-wrap mui-transitioning">
+		 	
+		 	<header class="mui-bar mui-bar-nav">
+		 	  <a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left" href="#offCanvasSide"></a>
+		 	  <h1 class="mui-title">标题</h1>
+		 	</header>
+		 	<nav class="mui-bar mui-bar-tab">
+		 		<a class="mui-tab-item mui-active">
+		 			<span class="mui-icon mui-icon-home"></span>
+		 			<span class="mui-tab-label">首页</span>
+		 		</a>
+		 		<a class="mui-tab-item">
+		 			<span class="mui-icon mui-icon-phone"></span>
+		 			<span class="mui-tab-label">电话</span>
+		 		</a>
+		 		<a class="mui-tab-item">
+		 			<span class="mui-icon mui-icon-email"></span>
+		 			<span class="mui-tab-label">邮件</span>
+		 		</a>
+		 		<a class="mui-tab-item">
+		 			<span class="mui-icon mui-icon-gear"></span>
+		 			<span class="mui-tab-label">设置</span>
+		 		</a>
+		 	</nav>
+		 	<div class="mui-content mui-scroll-wrapper">
+		 	  <div class="mui-scroll">
+		 		
+		 		
+				
+					<div style="padding: 10px;">
+				
+						<div id="slider" class="mui-slider">
+							<div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+							
+							
+				
+							
+							
+				
+							
+							
+				
+							<div class="mui-slider-indicator" id="lbt2"></div>
+							
+						</div>
+				
+					</div>
+					
+					<div id="" style="padding: 10px;">
+						
+							
+						<ul class="mui-table-view mui-grid-view mui-grid-9" id="JGGList">
+							
+						
+						
+						</ul>
+						
+						
+					</div>
+					
+					<div id="" style="padding: 10px;">
+						
+						<ul class="mui-table-view" id="KmlbList">
+							
+							
+							
+							
+							
+						</ul>
+						
+						<button type="button" id="GEngXingHTML" class="mui-btn mui-btn-red mui-btn-block">按钮</button>
+						
+					</div>
+					
+				</div>
+				
+		 	  </div>
+		 	</div>  
+		 	<div class="mui-off-canvas-backdrop"></div>
+		   </div>
+		 </div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+
+				mui('.mui-scroll-wrapper').scroll({})
+
+				function YeiMian() {
+
+					mui.ajax(http + '/api/building/banner/list', {
+						data: {
+
+						},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+
+						dataType: 'json',
+						type: 'GET',
+						timeout: 10000,
+						success: function(data) {
+
+							if (data.code == 200) {
+
+								var LBTSang = '';
+								var LBTXia = '';
+
+								LBTSang += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+				  </a>
+				</div>`
+
+								for (var i = 0; i < data.rows.length; i++) {
+
+									LBTSang += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}">
+				  </a>
+				</div>`
+									LBTXia += `<div class="mui-indicator"></div>`
+								}
+
+								LBTSang += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].length}">
+				  </a>
+				</div>`
+
+								document.getElementById('lbt1').innerHTML = LBTSang;
+								document.getElementById('lbt2').innerHTML = LBTXia;
+
+							}
+							mui('.mui-slider').slider({
+								interval: 3000
+							})
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+
+				}
+				YeiMian()
+
+				function jGG(){
+
+					var YeiMianJS = [{
+						name:'li_1',
+						id:'li_1',
+					},
+					{
+						name:'li_2',
+						id:'li_2',
+					},
+					{
+						name:'li_3',
+						id:'li_3',
+					},
+					]
+
+					var JggHTML = ''
+
+					for (var i = 0 ; i < YeiMianJS.length ; i++) {
+
+						JggHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#" id="${YeiMianJS[i].name}">
+						<img src="" style="height: 50px; width: 50px; border-radius: 30px;">
+						<div class="mui-media-body">${YeiMianJS[i].id}</div>
+					</a>
+				</li>`
+
+					}
+
+					document.getElementById('JGGList').innerHTML = JggHTML
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					})
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					})
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					})
+
+				}
+				jGG()
+
+				function KMLB(){
+
+					mui.ajax(http + '/api/model/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								KMLBXiangQing = data.rows;
+								KMLBWuTiao = 5;
+								GebgXibg()
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+					function GebgXibg(){
+
+						if (KMLBWuTiao >= KMLBXiangQing.length) {
+							KMLBWuTiao = KMLBXiangQing.length
+						}
+
+						var kmlbHTML = '';
+
+						for (var i = 0 ; i < KMLBWuTiao ; i++) {
+
+							if (i % 2 == 0) {
+
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<img class="mui-media-object mui-pull-left" src="${httpimg + KMLBXiangQing[i].imgUrl}">
+							<div class="mui-media-body">
+								<h4>${KMLBXiangQing[i].title}</h4>
+								<h5>${KMLBXiangQing[i].name}</h5>
+								<p class="mui-ellipsis">${KMLBXiangQing[i].content}</p>
+							</div>
+						</a>
+					</li>`
+
+							} else{
+
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+									<a href="javascript:;">
+										<img class="mui-media-object mui-pull-right" src="${httpimg + KMLBXiangQing[i].imgUrl}">
+										<div class="mui-media-body">
+											<h4>${KMLBXiangQing[i].title}</h4>
+											<h5>${KMLBXiangQing[i].name}</h5>
+											<p class="mui-ellipsis">${KMLBXiangQing[i].content}</p>
+										</div>
+									</a>
+								</li>`
+
+							}
+
+						}
+
+						document.getElementById('KmlbList').innerHTML = kmlbHTML
+
+						document.getElementById('GEngXingHTML').addEventListener('tap',function(){
+
+							KMLBWuTiao += 5 ;
+							GebgXibg()
+
+							if (KMLBWuTiao >= KMLBXiangQing.length) {
+								this.innerHTML = '更新成功';
+								this.getAttribute('disabled','disabled');
+								this.classList.add('mui-disabled')
+							}
+
+						})
+					}
+
+				}
+				KMLB()
+			})
+		</script>
+	</body>
+
+</html>

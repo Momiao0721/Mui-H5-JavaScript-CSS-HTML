@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">练习1</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 5px;"  id="BaoMingHTML">
+				
+				
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LianXiSan(){
+
+					mui.ajax(http + '/api/activity/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var LianXiListOne = '';
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									LianXiListOne += `<div style="border-radius: 20px; background-color: #B6B6B6;">
+
+					<img src="${httpimg + data.rows[i].imgUrl}" style="height: 150px; width: 100%; padding: 8px; border-radius: 10%;">
+
+					<div style="padding: 7px;">
+						<h4>${data.rows[i].activityName}</h4>
+						<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+						<h5 style="color: #000000;">${data.rows[i].initiator}</h5>
+						<h5 class="mui-ellipsis" style="color: #000000;">${data.rows[i].briefIntroduction}</h5>
+						<hr >
+						<p>人数:${data.rows[i].applyNum}
+						<button BaoMingID="${data.rows[i].id}" type="button" class="mui-media mui-btn mui-btn-red" style="position: absolute;right: 5%; border-radius: 20px;">按钮</button>
+						</p>
+					</div>
+
+				</div>
+				<br>
+				`
+								}
+
+								document.getElementById('BaoMingHTML').innerHTML = LianXiListOne
+
+								var BaoMingList = document.querySelectorAll('#BaoMingHTML .mui-media')
+
+								for (var j = 0 ; j < data.rows.length ; j++) {
+
+									(function(BaoMing){
+
+										BaoMing.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BaoMingID')
+
+											console.log(id)
+
+											plus.storage.setItem('BaoMingID',id)
+
+											mui.openWindow({
+												url:'LianXiOneXiangQing.html',
+												id:'LianXiOneXiangQing',
+												extras:{
+													id:id
+												}
+											})
+
+										})
+
+									})(BaoMingList[j])
+
+								}
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LianXiSan()
+
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">报名详情</h1>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		</header>
+		<div class="mui-content">
+			
+			<div id="" style="padding: 5px;">
+				
+				<div id="XiangQing" style="padding: 5px; background-color: #ACACB4; border-radius: 20px;">
+					
+					
+					
+				</div>
+				
+				<br>
+				
+				<div id="Xia" style="border-radius: 30px; padding: 5px; background-color: #ACACB4;">
+					
+					
+					
+				</div>
+				
+				
+			</div>
+			
+		</div>
+		
+		<nav class="mui-bar mui-bar-tab">
+			
+			<div style="padding: 10px;" id="XiangQingXia">
+				
+			</div>
+			
+		</nav>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingID') || BaoMingID.id
+
+				console.log(id)
+
+				function XiangQing(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var BaoMingHTML = '';
+								var XiaHTML = '';
+
+								BaoMingHTML += `<div id="">
+
+						<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%; border-radius: 10px;">
+
+						<div style="padding: 5px;">
+							<h4>${data.data.activityName}</h4>
+							<h5 style="color: #000000;">${data.data.startEndTime}</h5>
+							<h5 style="color: #000000;">${data.data.initiator}</h5>
+							<h5 style="color: #000000;">${data.data.overTime}</h5>
+						</div>
+
+					</div>`
+
+								XiaHTML += `<div>
+						<p style="color: #000000; padding: 5px;">详情:${data.data.activityDetail}</p>
+					</div>`
+
+								document.getElementById('XiangQing').innerHTML = BaoMingHTML
+								document.getElementById('Xia').innerHTML = XiaHTML
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				XiangQing()
+
+				function Xia(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var BaoMingJiYi = localStorage.getItem('BaoMing_JiYi' + id)
+
+								var XiaHTML = ''
+								XiaHTML += `人类:${data.data.applyNum}
+				<button id="BaoMiing" type="button" class="mui-btn mui-btn-red ${BaoMingJiYi ? 'mui-disabled' : ''}" style="position: absolute;right: 0; width: 50%;">报名</button>`
+
+								document.getElementById('XiangQingXia').innerHTML = XiaHTML
+
+								document.getElementById('BaoMiing').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if (e.index == 1) {
+
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+												dataType:'json',
+												type:'post',
+												timeout:10000,
+												success:function(data){
+													if (data.code == 200) {
+														mui.toast('报名成功')
+														Xia()
+														localStorage.setItem('BaoMing_JiYi' + id , 1)
+													}
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+
+										} else{
+
+											mui.toast('报名失败')
+
+										}
+									},'div')
+
+								})
+
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				Xia()
+
+			})
+		</script>
+	</body>
+
+</html>
