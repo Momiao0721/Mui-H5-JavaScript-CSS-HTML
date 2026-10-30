@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" id="LianXiOne">
+				<span class="mui-icon mui-icon-phone"></span>
+				<span class="mui-tab-label">练习1</span>
+			</a>
+			<a class="mui-tab-item" id="LianXiTou">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">练习2</span>
+			</a>
+			<a class="mui-tab-item" id="LianXiSan">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">练习3</span>
+			</a>
+		</nav>
+		
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages:[{
+				  url:'LianXiSan.html',
+			      id:'LianXiSan',
+			      styles:{
+			        top:'0px',
+					bottom:'50px'
+			      },
+			      extras:{}
+				},
+				{
+				  url:'LianXiTou.html',
+				  id:'LianXiTou',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'LianXiOne.html',
+				  id:'LianXiOne',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				},
+				{
+				  url:'home.html',
+				  id:'home',
+				  styles:{
+				    top:'0px',
+					bottom:'50px'
+				  },
+				  extras:{}
+				}
+				]
+			})
+			mui.plusReady(function () {
+
+				function YeiMian(id){
+					plus.webview.getWebviewById(id).show()
+				}
+
+				document.getElementById('LianXiSan').addEventListener('tap',function(){
+					YeiMian('LianXiSan')
+				});
+
+				document.getElementById('LianXiTou').addEventListener('tap',function(){
+					YeiMian('LianXiTou')
+				});
+
+				document.getElementById('LianXiOne').addEventListener('tap',function(){
+					YeiMian('LianXiOne')
+				});
+
+				document.getElementById('home').addEventListener('tap',function(){
+					YeiMian('home')
+				});
+
+			})
+		</script>
+	</body>
+
+</html>
