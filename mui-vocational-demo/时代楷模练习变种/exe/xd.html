@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 10px;" id="XingDeBaoMing">
+				
+				
+					
+					
+						
+						
+					
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var id = localStorage.getItem('userId') || 1
+
+				function XingDeHTML(){
+					mui.ajax(http + '/api/history/list',{
+						data:{
+							userId:id
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var XingDe = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									var row = data.rows[i];
+									XingDe += `<div id="" style="padding: 6px; border-radius: 10px; background-color: #555555;">
+					<p style="color: #000000; position: absolute;right: 15px;">时间${data.rows[i].issueTime}</p>
+					<p style="color: #000000;">${data.rows[i].title}</p>
+					<hr >`
+
+									XingDe += `<h5 style="color: #000000;">内容:${data.rows[i].content}</h5>`
+
+									if (row.wstudyNote) {
+										XingDe += `<div style="padding: 10px; background-color: #DDDDDD; border-radius: 10px;">
+										${row.wstudyNote.noteTitle}
+						<p style="color: #000000;">我是内容${row.wstudyNote.noteContent}</p>
+						<hr >`
+										XingDe += `<button type="button" class="mui-btn mui-btn-red mui-media">编辑</button>
+						<button type="button" class="mui-btn mui-btn-red mui-media" SanCu-LsID="${data.rows.id}" SanCU-SanCUID="row.wstudyNote.noteId">删除</button>`
+									} else{
+										XingDe += `<div style="padding: 10px; background-color: #DDDDDD; border-radius: 10px;">
+										<p style="color: #000000;">空</p>
+										<hr >`
+										XingDe += `<button type="button" class="mui-btn mui-btn-red mui-media">增加</button>`
+									}
+
+									XingDe += `</div>
+				</div>
+				<br>`
+
+								}
+								document.getElementById('XingDeBaoMing').innerHTML = XingDe
+								var XingDe = document.querySelectorAll('#XingDeBaoMing .mui-media')
+
+								for (var i = 0 ; i < XingDe.length ; i++) {
+									(function(BaiMing){
+										BaiMing.addEventListener('tap',function(){
+
+											var LiSID = document.getElementById('SanCu-LsID')
+											var SanCUID = document.getElementById('SanCU-SanCUID')
+											console.log(LiSID)
+											console.log(SanCUID)
+
+										})
+									})(XingDe[i])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				XingDeHTML()
+
+			})
+		</script>
+	</body>
+
+</html>

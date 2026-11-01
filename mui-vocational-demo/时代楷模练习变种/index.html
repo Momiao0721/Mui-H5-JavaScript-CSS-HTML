@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="./css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		
+		<div class="mui-content">
+			
+			
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="one"></div>
+				
+				
+				
+				
+				
+				
+				
+				
+
+			  <div class="mui-slider-indicator" id="tow"></div>
+				
+			</div>
+			
+		</div>
+		<div style="padding: 20px;position: absolute;z-index: 10;top: 0px;margin-left: 68%;">
+			<button id="btn" type="button" class="mui-btn mui-btn-danger mui-btn-block"
+				style="height: 25px;padding: 0 12px;border-radius: 25px;">
+				<span id="time" style="color: #0062CC;">
+					5
+				</span>
+				跳过
+			</button>
+		</div>
+		<script src="./js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				mui.ajax(http + '/api/guide/list?type=1',{
+
+					headers:{
+						'Content-Type':'application/json',
+					},
+					dataType:'json',
+					type:'GET',
+					timeout:10000,
+					success:function(data){
+						console.log(JSON.stringify(data))
+						if (data.code == 200) {
+
+							var rows = data.rows || [];
+							console.log('rows 数量 =', rows.length)
+							if (rows.length == 0) return;
+
+							console.log('第一张图片 =', httpimg + rows[0].imgUrl)
+
+							var GongGAoHTML = '';
+							var GongGAoXia = '';
+
+							GongGAoHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}" style="width: 100%; height: 600px;">
+				  </a>
+				</div>`
+							for (var i = 0 ; i < data.rows.length ; i++) {
+								GongGAoHTML += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}"style="width: 100%; height: 600px;">
+				  </a>
+				</div>`
+								GongGAoXia += `<div class="mui-indicator"></div>`
+							}
+
+								GongGAoHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].imgUrl}" style="width: 100%; height: 600px;">
+				  </a>
+				</div>`
+
+							document.getElementById('one').innerHTML = GongGAoHTML
+							document.getElementById('tow').innerHTML = GongGAoXia
+
+							mui('.mui-slider').slider({ interval: 3000 })
+
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						console.log('请求失败：', xhr.status, xhr.responseText)
+					}
+				});
+
+				document.getElementById('btn').addEventListener('tap', function() {
+
+					mui.openWindow({
+						url:'DengLu.html',
+						id:'DengLu'
+					})
+				});
+
+				var c = 5
+
+				function WuMiao(){
+				    document.getElementById('time').innerHTML = c;
+				    c = c - 1;
+
+				    if (c < 0) {
+				        mui.openWindow({ url: 'DengLu.html', id: 'DengLu' });
+				        return;
+				    }
+
+				    setTimeout(WuMiao, 1000);
+				}
+				WuMiao();
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		
+		
+		
+		
+		<div class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+		  
+		  <aside class="mui-off-canvas-left" id="offCanvasSide">
+			<div class="mui-scroll-wrapper">
+			  <div class="mui-scroll">
+				
+				
+			  </div>
+			</div>
+		  </aside>
+		  
+		  <div class="mui-inner-wrap">
+			
+			<header class="mui-bar mui-bar-nav">
+			  <a class="mui-icon mui-action-menu mui-icon-bars mui-pull-left" href="#offCanvasSide"></a>
+			  <h1 class="mui-title">标题</h1>
+			</header>
+			
+			<div class="mui-content mui-scroll-wrapper">
+			  <div class="mui-scroll">
+				
+				
+				<div style="padding: 10px;">
+					<div id="slider" class="mui-slider">
+						<div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+						
+						
+				
+						
+						
+				
+						
+						
+				
+						<div class="mui-slider-indicator" id="lbt2"></div>
+						
+					</div>
+				</div>
+				
+				<div style="padding: 10px;">
+					<ul class="mui-table-view mui-grid-view mui-grid-9" id="jgg">
+						
+						
+						
+					</ul>
+				
+				</div>
+				
+				<div id="" style="padding: 10px;">
+					
+					<ul class="mui-table-view" id="kmlb">
+						
+						
+						
+					</ul>
+					
+					
+				</div>
+				<div style="padding: 10px;">
+					<button type="button" class="mui-btn mui-btn-red mui-btn-block" id="GenXing">更新</button>
+				</div>
+				
+				
+			  </div>
+			</div>  
+			<div class="mui-off-canvas-backdrop"></div>
+		  </div>
+		</div>
+		
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui('.mui-scroll-wrapper').scroll({})
+			mui.plusReady(function() {
+
+				function lbtJS() {
+
+					mui.ajax(http + '/api/building/banner/list', {
+						data: {
+
+						},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+
+						dataType: 'json',
+						type: 'GET',
+						timeout: 10000,
+						success: function(data) {
+							console.log(data.code)
+							if (data.code == 200) {
+								var lbtHTML = '';
+								var lbtXia = '';
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[data.rows.length-1].imgUrl}">
+				  </a>
+				</div>`
+								for (var i = 0; i < data.rows.length; i++) {
+									lbtHTML += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}">
+				  </a>
+				</div>`
+									lbtXia += `<div class="mui-indicator"></div>`
+								}
+								lbtHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].httpimg}">
+				  </a>
+				</div>`
+
+								document.getElementById('lbt1').innerHTML = lbtHTML;
+								document.getElementById('lbt2').innerHTML = lbtXia;
+
+							}
+							mui('.mui-slider').slider({
+								interval: 3000
+							})
+						},
+						error: function(xhr, type, errorThrown) {
+
+						}
+					});
+
+				}
+				lbtJS()
+
+				function jgg(){
+
+					var jggYeiMian = [{
+						name:'li_1',
+						id:'li_1'
+					},
+					{
+						name:'li_2',
+						id:'li_2'
+					},
+					{
+						name:'li_3',
+						id:'li_3'
+					},
+					]
+					var jggHTML = '';
+					for (var i = 0 ; i < jggYeiMian.length ; i++) {
+					jggHTML += `<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#" id="${jggYeiMian[i].id}">
+							<img src="../IMG/4bc0706dd1a65.jpg" style="width: 40px; height: 40px; border-radius: 30px;">
+							<div class="mui-media-body">${jggYeiMian[i].name}</div>
+						</a>
+					</li>`
+					}
+					document.getElementById('jgg').innerHTML = jggHTML;
+
+					document.getElementById('li_1').addEventListener('tap',function(){
+						mui.openWindow('li_1.html')
+					});
+					document.getElementById('li_2').addEventListener('tap',function(){
+						mui.openWindow('li_2.html')
+					});
+					document.getElementById('li_3').addEventListener('tap',function(){
+						mui.openWindow('li_3.html')
+					});
+				}
+				jgg()
+
+				function kmlb(){
+
+					mui.ajax(http + '/api/model/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								kmlbQuan = data.rows;
+								kmlbWuTiao = 5
+								GengXing()
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+					function GengXing(){
+						if (kmlbWuTiao >= kmlbQuan.length) {
+							kmlbWuTiao = kmlbQuan.length
+						}
+
+						var kmlbHTML = '';
+						for (var i = 0 ; i < kmlbWuTiao ; i++) {
+							if (i % 2 == 1) {
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+						<img class="mui-media-object mui-pull-right" src="${httpimg + kmlbQuan[i].imgUrl}">
+							<div class="mui-media-body">
+								${kmlbQuan[i].title}
+								<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+							</div>
+						</a>
+					</li>`
+							} else{
+								kmlbHTML += `<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<img class="mui-media-object mui-pull-left" src="${httpimg + kmlbQuan[i].imgUrl}">
+							<div class="mui-media-body">
+								${kmlbQuan[i].title}
+								<p class="mui-ellipsis">${kmlbQuan[i].content}</p>
+							</div>
+						</a>
+					</li>`
+							}
+							document.getElementById('kmlb').innerHTML = kmlbHTML
+						}
+							document.getElementById('GenXing').addEventListener('tap',function(){
+								kmlbWuTiao += 5
+								GengXing()
+								if (kmlbWuTiao >= kmlbQuan.length) {
+									this.innerHTML = '更新成功'
+									this.setAttribute('disabled','disabled')
+									this.classList.add('mui-disabled')
+								}
+							})
+
+					}
+				}
+				kmlb()
+			})
+		</script>
+	</body>
+
+</html>
