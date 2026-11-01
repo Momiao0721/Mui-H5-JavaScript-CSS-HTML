@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能一:感言列表</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="GanYanLieBiao" style="padding: 10px;">
+				
+				
+				
+			</div>
+			<br>
+			<br>
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<button type="button" class="mui-btn mui-btn-red" style="width: 100%;" id="TiaoJIaBiJi">添加</button>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function GongNengList(){
+
+					mui.ajax(http + '/api/testimonials/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+
+							if (data.code == 200) {
+
+								var ListHTML = '';
+
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									ListHTML += `<div style="border-radius: 10px; background-color: #eae9ee; position: relative;">
+					<h5 style="color: #000000; position: absolute; right: 2%;top: -2px;">时间${data.rows[i].createTime}</h5>
+					<h5 style="color: #000000;">标题:${data.rows[i].title}</h5>
+					<hr >
+					<h4>内容:${data.rows[i].content}</h4>
+					<hr >
+					<p style="color: #cc0000;" class="mui-media"" id="SanCu" SanCu="${data.rows[i].id}">删除</p>
+				</div>
+					<br>`
+
+								}
+
+								document.getElementById('GanYanLieBiao').innerHTML = ListHTML
+								var SanCuListr = document.querySelectorAll('#GanYanLieBiao .mui-media')
+
+								for (var j = 0 ; j < SanCuListr.length ; j++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+
+											var id = this.getAttribute('SanCu')
+
+											console.log(id)
+
+											mui.confirm('message','title',['取消','确认'],function (e) {
+												if (e.index == 1) {
+
+													mui.ajax(http + '/api/testimonials/' + id,{
+														data:{
+
+														},
+														headers:{
+															'Content-Type':'application/json',
+															'Authorization':localStorage.getItem('token')
+														},
+														dataType:'json',
+														type:'DELETE',
+														timeout:10000,
+														success:function(data){
+
+															if (data.code == 200) {
+
+																mui.toast('删除成功')
+																GongNengList()
+
+															}
+
+														},
+														error:function(xhr,type,errorThrown){
+
+														}
+													});
+
+												} else{
+
+												}
+											},'div')
+
+										})
+									})(SanCuListr[j])
+								}
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				GongNengList()
+
+				document.getElementById('TiaoJIaBiJi').addEventListener('tap',function(){
+
+					mui.openWindow({
+						url:'TiaoJia.html',
+						id:'TiaoJia'
+					})
+
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

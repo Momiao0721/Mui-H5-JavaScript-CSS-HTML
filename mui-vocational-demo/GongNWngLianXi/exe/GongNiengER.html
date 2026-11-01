@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能二-练习</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div id="" style="padding: 5px;">
+				<div id="LsList">
+				
+				</div>
+				
+			</div>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function YeiMian(){
+
+				mui.ajax(http + '/api/history/list?userId=1',{
+					data:{
+
+					},
+					headers:{
+						'Authorization':localStorage.getItem('token')
+					},
+
+					dataType:'json',
+					type:'GET',
+					timeout:10000,
+					success:function(data){
+						console.log(JSON.stringify(data));
+
+						if (data.code == 200) {
+
+							var rows = data.rows || [];
+
+							if (rows.length == 0) {
+								document.getElementById('LsList').innerHTML = '<p style="text-align:center;color:#999;">暂无数据</p>';
+								return;
+							}
+
+							var LianXIHTML = '';
+							for (var i = 0 ; i < rows.length ; i++) {
+
+								var noteId = rows[i].wstudyNote ? rows[i].wstudyNote.noteId : '';
+
+								LianXIHTML += `<div style="padding: 5px; background-color: #DDDDDD; border-radius: 10px; margin-bottom: 8px;">
+
+					<p style="color: #000000;">${rows[i].title}</p>
+					<p style="color: #000000;">${rows[i].content}</p>
+					<hr >
+					
+					<button type="button" class="mui-btn mui-btn-red btn-del" data-nid="${noteId}" data-hid="${rows[i].id}">删除</button>
+
+				</div>`
+							}
+							document.getElementById('LsList').innerHTML = LianXIHTML
+						}
+
+					},
+					error:function(xhr,type,errorThrown){
+						console.log('请求失败：', xhr.status, xhr.responseText);
+					}
+				});
+				}
+				YeiMian()
+
+				mui('#LsList').on('tap', '.btn-del', function () {
+
+					var noteId = this.getAttribute('data-nid');
+					var hid = this.getAttribute('data-hid');
+
+					if (!noteId) {
+						mui.toast('这条没有笔记可删除');
+						return;
+					}
+
+					mui.confirm('确定删除这条笔记吗？', '删除', ['取消', '确定'], function (e) {
+						if (e.index == 1) {
+
+							mui.ajax(http + '/api/history/note?noteId=' + noteId + '&studyHistoryId=' + hid, {
+								data: {},
+								dataType: 'json',
+								type: 'DELETE',
+								timeout: 10000,
+								headers: {
+									'Authorization': localStorage.getItem('token')
+								},
+								success: function (data) {
+									if (data.code == 200) {
+										mui.toast('删除成功');
+										YeiMian();
+									} else {
+										mui.toast(data.msg || '删除失败');
+									}
+								},
+								error: function (xhr, type, errorThrown) {
+									console.log(xhr.status, xhr.responseText);
+								}
+							});
+						}
+					});
+				});
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">功能三</h1>
+		</header>
+		<div class="mui-content">
+
+			<div id="LsHTML" style="padding: 10px;"></div>
+
+		</div>
+
+		
+		<div id="noteMask" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0;">
+			<div style="position:absolute; top:50%; left:20px; right:20px; transform:translateY(-50%);
+				 background:#fff; border-radius:8px; padding:15px;">
+				<h4 id="notePopTitle" style="margin:0 0 10px;">添加笔记</h4>
+
+				<input type="text" id="noteTitleInput" class="mui-input-clear" placeholder="请输入标题">
+
+				<textarea id="noteContentInput" rows="4" placeholder="请输入内容"
+					style="margin-top:10px;"></textarea>
+
+				<div style="text-align:right; margin-top:15px;">
+					<button type="button" class="mui-btn" id="noteCancel">取消</button>
+					<button type="button" class="mui-btn mui-btn-blue" id="noteSave">保存</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			mui.plusReady(function () {
+
+				var historyRows = [];
+
+				var noteMode = 'add';
+				var curNoteId = '';
+				var curHid = '';
+
+				function GongNengSanList() {
+
+					var userId = localStorage.getItem('userId') || 1;
+
+					mui.ajax(http + '/api/history/list?userId=' + userId, {
+						data: {},
+						headers: {
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: 'GET',
+						timeout: 10000,
+						success: function (data) {
+
+							console.log(JSON.stringify(data));
+
+							if (data.code == 200) {
+
+								historyRows = data.rows || [];
+
+								var LienBiaoList = '';
+
+								for (var i = 0; i < historyRows.length; i++) {
+
+									var row = historyRows[i];
+
+									LienBiaoList += `<div style="padding: 10px; background-color: #CCCCCC; border-radius: 10px;">
+										<h4>标题:${row.title}</h4>
+										<h5 style="color: #000000;">内容:${row.content}</h5>`;
+
+									LienBiaoList += `<div style="padding: 8px; background-color: #FAFAFA;">
+										<div style="padding: 4px;">`;
+
+									if (row.wstudyNote) {
+										LienBiaoList += `<h5 style="color: #000000;">评论标题:${row.wstudyNote.noteTitle}</h5>
+											<h6>内容:${row.wstudyNote.noteContent}</h6>
+											<hr>
+											
+											<button type="button" class="mui-btn mui-btn-red btn-del"
+												data-nid="${row.wstudyNote.noteId}"
+												data-hid="${row.id}">删除</button>
+											<button type="button" class="mui-btn mui-btn-red btn-edit"
+												data-nid="${row.wstudyNote.noteId}"
+												data-hid="${row.id}">编辑</button>`;
+									} else {
+										LienBiaoList += `<p style="color: #999;">暂无笔记</p>`;
+									}
+
+									LienBiaoList += `<button type="button" class="mui-btn mui-btn-red btn-add"
+											data-hid="${row.id}">添加笔记</button>
+										</div>
+									</div>`;
+
+									LienBiaoList += `</div><br>`;
+								}
+
+								document.getElementById('LsHTML').innerHTML = LienBiaoList;
+							}
+						},
+						error: function (xhr, type, errorThrown) {
+							console.log('请求失败：', xhr.status, xhr.responseText);
+						}
+					});
+				}
+				GongNengSanList()
+
+				function openNotePopup(mode, hid, note) {
+					noteMode = mode;
+					curHid = hid;
+					curNoteId = note ? note.noteId : '';
+
+					document.getElementById('notePopTitle').innerText = mode === 'add' ? '添加笔记' : '编辑笔记';
+					document.getElementById('noteTitleInput').value = note ? (note.noteTitle || '') : '';
+					document.getElementById('noteContentInput').value = note ? (note.noteContent || '') : '';
+					document.getElementById('noteMask').style.display = 'block';
+				}
+
+				function closeNotePopup() {
+					document.getElementById('noteMask').style.display = 'none';
+				}
+
+				document.getElementById('noteCancel').addEventListener('tap', closeNotePopup);
+
+				document.getElementById('noteSave').addEventListener('tap', function () {
+
+					var title = document.getElementById('noteTitleInput').value.trim();
+					var content = document.getElementById('noteContentInput').value.trim();
+
+					if (title === '' || content === '') {
+						mui.toast('标题和内容不能为空');
+						return;
+					}
+
+					var url = http + '/api/history/note';
+					var reqData;
+					var reqType;
+
+					if (noteMode === 'add') {
+
+						reqData = {
+							noteTitle: title,
+							noteContent: content,
+							studyHistoryId: curHid
+						};
+						reqType = 'post';
+					} else {
+
+						reqData = {
+							noteId: curNoteId,
+							noteTitle: title,
+							noteContent: content
+						};
+						reqType = 'put';
+					}
+
+					mui.ajax(url, {
+						data: reqData,
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': localStorage.getItem('token')
+						},
+						dataType: 'json',
+						type: reqType,
+						timeout: 10000,
+						success: function (data) {
+							if (data.code == 200) {
+								mui.toast(noteMode === 'add' ? '添加成功' : '修改成功');
+								closeNotePopup();
+								GongNengSanList();
+							} else {
+								mui.toast(data.msg || '操作失败');
+							}
+						},
+						error: function (xhr, type, errorThrown) {
+							console.log(xhr.status, xhr.responseText);
+						}
+					});
+				});
+
+				mui('#LsHTML').on('tap', '.btn-del', function () {
+
+					var noteId = this.getAttribute('data-nid');
+					var hid = this.getAttribute('data-hid');
+
+					mui.confirm('确定删除这条笔记吗？', '删除', ['取消', '确定'], function (e) {
+						if (e.index == 1) {
+							mui.ajax(http + '/api/history/note?noteId=' + noteId + '&studyHistoryId=' + hid, {
+								data: {},
+								dataType: 'json',
+								type: 'DELETE',
+								timeout: 10000,
+								headers: {
+									'Authorization': localStorage.getItem('token')
+								},
+								success: function (data) {
+									if (data.code == 200) {
+										mui.toast('删除成功');
+										GongNengSanList();
+									} else {
+										mui.toast(data.msg || '删除失败');
+									}
+								},
+								error: function (xhr, type, errorThrown) {
+									console.log(xhr.status, xhr.responseText);
+								}
+							});
+						}
+					});
+				});
+
+				mui('#LsHTML').on('tap', '.btn-edit', function () {
+
+					var hid = this.getAttribute('data-hid');
+					var note = null;
+
+					for (var i = 0; i < historyRows.length; i++) {
+						if (historyRows[i].id == hid) {
+							note = historyRows[i].wstudyNote;
+							break;
+						}
+					}
+
+					openNotePopup('edit', hid, note);
+				});
+
+				mui('#LsHTML').on('tap', '.btn-add', function () {
+					var hid = this.getAttribute('data-hid');
+					openNotePopup('add', hid, null);
+				});
+
+			})
+		</script>
+	</body>
+
+</html>

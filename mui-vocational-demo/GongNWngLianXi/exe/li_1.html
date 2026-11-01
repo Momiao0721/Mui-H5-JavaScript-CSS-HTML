@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">功能练习四</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 5px;">
+				<div style="padding: 6px;" id="GongNengSi">
+					
+					
+						
+								
+								
+							</div>
+						</div>
+					</div>
+					<br>
+					
+				</div>
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var userId = localStorage.getItem('userId') || 1
+
+				function YeiMianJS(){
+
+					mui.ajax(http + '/api/history/list?userId=' + userId,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+
+								var SIGongNEngHTML = '';
+								var SIGongNEng = data.rows || [];
+
+								for (var i = 0 ; i < SIGongNEng.length ; i++) {
+
+									var row = SIGongNEng[i]
+
+									SIGongNEngHTML += `<div style="background-color: #4a4747; border-radius: 10px; padding: 5px;">
+						<h4>内容:${SIGongNEng[i].title}</h4>
+						<h5 style="color: #000000;">${SIGongNEng[i].content}</h5>`
+
+									SIGongNEngHTML += `<div style="padding: 5px; background-color: #AAAAAA; border-radius: 10px;">
+							<div style="padding: 5px;">`
+
+									if (row.wstudyNote) {
+										SIGongNEngHTML += `<h5 style="color: #000000;">${row.wstudyNote.noteTitle}</h5>
+								<h6 style="color: #000000;">${row.wstudyNote.noteContent}</h6>
+								<hr >`
+
+								SIGongNEngHTML += `<button type="button" class="mui-btn mui-btn-red" id="SanCu" SanCu-LsID="${row.wstudyNote.id}" SanCu-BjID="">删除</button>
+								<button type="button" class="mui-btn mui-btn-red">更改</button>`
+
+									} else{
+										SIGongNEngHTML += `<h5 style="color: #000000;">没有内容</h5>`
+									}
+
+									SIGongNEngHTML += `<button type="button" class="mui-btn mui-btn-red">增加</button>`
+
+									SIGongNEngHTML += `</div>
+						</div>
+					</div>
+					<br>`
+									document.getElementById('GongNengSi').innerHTML = SIGongNEngHTML
+								}
+
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				YeiMianJS()
+
+			})
+		</script>
+	</body>
+
+</html>

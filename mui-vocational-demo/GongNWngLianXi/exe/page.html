@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" id="home">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-phone" id="GongNiengYi"></span>
+				<span class="mui-tab-label">功能一</span>
+			</a>
+			<a class="mui-tab-item">
+				<span class="mui-icon mui-icon-email" id="GongNiengER"></span>
+				<span class="mui-tab-label">功能二</span>
+			</a>
+			<a class="mui-tab-item" id="GongNiengSan">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">功能三</span>
+			</a>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+		mui.init({
+			subpages:[{
+			  url:'GongNiengSan.html',
+		      id:'GongNiengSan',
+		      styles:{
+		        top:'0px',
+				bottom:'50px'
+		      },
+		      extras:{}
+			},
+			{
+			  url:'GongNiengER.html',
+			  id:'GongNiengER',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			},
+			{
+			  url:'GongNiengYi.html',
+			  id:'GongNiengYi',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			},
+			{
+			  url:'home.html',
+			  id:'home',
+			  styles:{
+			    top:'0px',
+				bottom:'50px'
+			  },
+			  extras:{}
+			},
+			]
+		})
+		mui.plusReady(function () {
+
+			function YeiMian(id){
+				plus.webview.getWebviewById(id).show()
+			}
+
+			document.getElementById('GongNiengSan').addEventListener('tap',function(){
+				YeiMian('GongNiengSan')
+			})
+			document.getElementById('GongNiengER').addEventListener('tap',function(){
+				YeiMian('GongNiengER')
+			})
+			document.getElementById('GongNiengYi').addEventListener('tap',function(){
+				YeiMian('GongNiengYi')
+			})
+			document.getElementById('home').addEventListener('tap',function(){
+				YeiMian('home')
+			})
+
+		})
+		</script>
+	</body>
+
+</html>
