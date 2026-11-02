@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情页</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 10px;">
+				<div id="XiangQing">
+					
+					
+					
+				</div>
+			</div>
+			
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<div id="Xia">
+				
+			</div>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingID') || extra.id
+
+				console.log(id)
+
+				function QiangQingYei(){
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var XiangQingHTML = '';
+								var XiangQing = data.data
+
+									XiangQingHTML += `<div style="background-color: #8F8F94; border-radius: 20px;">
+						<img src="${httpimg + XiangQing.imgUrl}" style="border-radius: 20px; height: 200px; width: 100%; padding: 6px;">
+						<div style="padding: 5px;">
+							<h4>${XiangQing.activityName}</h4>
+							<h5 style="color: #000000;">${XiangQing.startEndTime}</h5>
+							<h5 style="color: #000000;">${XiangQing.initiator}</h5>
+							<h5 style="color: #000000;">${XiangQing.overTime}</h5>
+						</div>
+					</div>
+					<br>
+					<div id="" style="padding: 6px; background-color: #999999;">
+						<h4>简介:</h4>
+						<p style="color: #000000;">${XiangQing.activityDetail}</p>
+					</div>`
+
+								document.getElementById('XiangQing').innerHTML = XiangQingHTML
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				QiangQingYei()
+
+				function Xia(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var XiaHTML = '';
+								var XiangQing = data.data;
+								var BaoMing = localStorage.getItem('BaoMing-JiYi' + id)
+								XiaHTML += `<h4>报名人数:${XiangQing.applyNum}</h4>
+				<button id="BaoMing" type="button" class="mui-btn mui-btn-red ${BaoMing?'mui-disabled':''}" style="width: 50%; position: absolute;right: 0;">报名</button>`
+								document.getElementById('Xia').innerHTML = XiaHTML
+
+								document.getElementById('BaoMing').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if (e.index == 1) {
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+
+												dataType:'json',
+												type:'POST',
+												timeout:10000,
+												success:function(data){
+													if (data.code == 200) {
+														mui.toast('报名成功')
+														localStorage.setItem('BaoMing-JiYi' + id ,1)
+														Xia()
+													}else{
+														mui.toast('报名失败')
+													}
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+										}else{
+
+										}
+									},'div')
+
+								})
+
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				Xia()
+
+			})
+		</script>
+	</body>
+
+</html>
