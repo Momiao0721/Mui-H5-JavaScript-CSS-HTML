@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">报名</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view mui-grid-view mui-grid-9" id="BaoMing">
+				
+			
+			
+			
+				</ul>
+			
+			
+		</div>
+		
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function BaoMIng(){
+					mui.ajax(http + '/api/activity/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var BaomINGHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+								BaomINGHTML += `<li class="mui-table-view-cell mui-col-xs-6 mui-media" BaoMIngID="${data.rows[i].id}" style="height: 230px;">
+				<a href="#">
+					<img src="${httpimg + data.rows[i].imgUrl}" style="height: 100px; width: 100%;">
+					<p style="color: #000000;" class="mui-ellipsis">${data.rows[i].activityName}</p>
+					<p style="color: #000000;" class="mui-ellipsis">${data.rows[i].startEndTime}</p>
+					<p style="color: #000000;" class="mui-ellipsis">${data.rows[i].briefIntroduction}</p>
+				</a>
+			</li>`
+								}
+								document.getElementById('BaoMing').innerHTML = BaomINGHTML
+								var BaoMingList = document.querySelectorAll('#BaoMing .mui-media')
+
+								for (var j = 0 ; j < BaoMingList.length ; j++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BaoMIngID')
+
+											console.log(id)
+
+											plus.storage.setItem('BaoMIngID',id);
+
+											mui.openWindow({
+												url:'BaoMIngXiangQing.html',
+												id:'BaoMIngXiangQing',
+												extras:{
+													id:id
+												}
+											})
+										})
+									})(BaoMingList[j])
+								}
+							}
+
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				BaoMIng()
+			})
+		</script>
+	</body>
+
+</html>
