@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情页</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 10px;">
+				<div id="XiangQingShang">
+					
+					
+					
+				</div>
+			</div>
+			
+		</div>
+		
+		<nav class="mui-bar mui-bar-tab">
+			<div id="DiBu"> 
+				
+			</div>
+		</nav>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingId') || extra.id
+
+ 				console.log(id)
+
+				function YeiMianShang(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var XianQingHTML = '';
+									XianQingHTML += `<div style="padding: 6px; background-color: #797979; border-radius: 10px;">
+						<img src="${httpimg + data.data.imgUrl}"  style="height: 200px; width: 100%; border-radius: 10px;">
+						<div style="padding: 10px;">
+							<h4>${data.data.activityName}</h4>
+							<h5 style="color: #000000;">${data.data.startEndTime}</h5>
+							<h5 style="color: #000000;">${data.data.initiator}</h5>
+							<h5 style="color: #000000;">${data.data.overTime}</h5>
+						</div>
+					</div>
+					<br>
+					<div style="padding: 6px; background-color: #797979; border-radius: 10px;">
+						<div style="color: #000000; padding: 5px;">
+						<h4>简介:</h4>
+						<p style="color: #000000;">${data.data.activityDetail}</p>
+						</div>
+					</div>
+					<br>
+					<br>
+					`
+
+								document.getElementById('XiangQingShang').innerHTML = XianQingHTML
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				YeiMianShang()
+
+				function Xio(){
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if(data.code == 200){
+								var DiBuiHTML = '';
+								var JiYi = localStorage.getItem('JiYi' + id)
+								DiBuiHTML += `<div style="padding: 10px;">
+					人数:${data.data.applyNum}
+					<button type="button" class="mui-btn mui-btn-red ${JiYi?'mui-disabled':''}" id="BaomIng" style="position: absolute;right: 0; width: 50%;">报名</button>
+				</div>`
+								document.getElementById('DiBu').innerHTML = DiBuiHTML
+								document.getElementById('BaomIng').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if(e.index == 1){
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+												dataType:'json',
+												type:'POST',
+												timeout:10000,
+												success:function(data){
+													console.log(data.code)
+													if(data.code == 200){
+														mui.toast('报名成功')
+														localStorage.setItem('JiYi' + id,1)
+														Xio()
+													}else{
+														mui.toast('报名失败')
+													}
+												},
+												error:function(xhr,type,errorThrown){
+													mui.toast('网络错误/检查API接口')
+												}
+											});
+										}else{
+											mui.toast('你点击了取消')
+										}
+									},'div')
+
+								})
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				Xio()
+			})
+		</script>
+	</body>
+
+</html>

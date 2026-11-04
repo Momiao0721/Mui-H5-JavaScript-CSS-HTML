@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+<body>
+	<div style="padding: 10px;" id="TiaoGuo">
+		<button type="button" class="mui-btn mui-btn-red" style="position: relative; border-radius: 15px;">按钮<span id="time">5</span></button>
+	</div>
+	<div class="mui-content">
+		<div id="">
+			
+			<div id="slider" class="mui-slider" >
+			  <div class="mui-slider-group mui-slider-loop" id="lbt1"></div>
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			  <div class="mui-slider-indicator" id="lbt2"></div>
+				
+			</div>
+			
+		</div>
+	</div>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+		mui.plusReady(function () {
+
+			mui.ajax(http + '/api/guide/list?type=1',{
+				headers:{
+					'Content-Type':'application/json'
+				},
+
+				dataType:'json',
+				type:'GET',
+				timeout:10000,
+				success:function(data){
+					console.log(data.code)
+					if (data.code == 200) {
+						YingDao = data.rows;
+						var YingDaoHTML = '';
+						var YingDaoXia = '';
+						YingDaoHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + YingDao[YingDao.length-1].imgUrl}">
+				  </a>
+				</div>`
+						for (var i = 0 ; i < YingDao.length ; i++) {
+							YingDaoHTML += `<div class="mui-slider-item">
+				  <a href="#">
+					<img src="${httpimg + YingDao[i].imgUrl}">
+				  </a>
+				</div>`
+
+							YingDaoXia += `<div class="mui-indicator"></div>`
+						}
+
+						YingDaoHTML += `<div class="mui-slider-item mui-slider-item-duplicate">
+				  <a href="#">
+					<img src="${httpimg + data.rows[0].imgUrl}">
+				  </a>
+				</div>`
+						document.getElementById('lbt1').innerHTML = YingDaoHTML
+						document.getElementById('lbt2').innerHTML = YingDaoXia
+					}
+					mui('.mui-slider').slider({interval:3000})
+				},
+				error:function(xhr,type,errorThrown){
+
+				}
+			});
+
+			document.getElementById('TiaoGuo').addEventListener('tap',function(){
+				mui.openWindow({
+					url:'SengluYei.html',
+					id:'SengluYei'
+				})
+			})
+
+			c = 5
+
+			function WuMiao(){
+				document.getElementById('time').innerHTML = c;
+				c = c -1
+				if (c < 1) {
+					mui.openWindow({
+						url:'SengluYei.html',
+						id:'SengluYei',
+					})
+					return;
+				}
+				setTimeout(WuMiao,1000)
+			}
+			WuMiao()
+		})
+    </script>
+</body>
+</html>

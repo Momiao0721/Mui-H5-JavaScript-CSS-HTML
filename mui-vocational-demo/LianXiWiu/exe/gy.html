@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">公益</h1>
+		</header>
+		<div class="mui-content">
+			<button type="button" class="mui-btn mui-btn-red mui-btn-block" style="height: 30px;" id="GengXing">报名后点击更新</button>
+			<div style="padding: 10px;">
+				<div id="GongYi">
+					
+					
+					
+				</div>
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function gongYiList(){
+
+					mui.ajax(http + '/api/activity/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var GongYiHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									GongYiHTML += `<div style="padding: 5px; border-radius: 10px; background-color: #ACACB4;">
+						<img src="${httpimg + data.rows[i].imgUrl}" style="height: 200px; width: 100%; border-radius: 10px;">
+						<div style="padding: 5px;">
+							<h4>${data.rows[i].activityName}</h4>
+							<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+							<h5 style="color: #000000;">${data.rows[i].initiator}</h5>
+						<hr >
+						<div style="padding: 5px;">
+							人数:${data.rows[i].applyNum}
+						<button BaoMingId="${data.rows[i].id}" type="button" class="mui-media mui-btn mui-btn-red" style="position: absolute;right: 6%; border-radius: 10px;">报名</button>
+						</div>
+						</div>
+					</div>
+					<br>`
+
+								}
+
+								document.getElementById('GongYi').innerHTML = GongYiHTML;
+								var GyList = document.querySelectorAll('#GongYi .mui-media')
+
+								for (var i = 0 ; i < GyList.length ; i++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+
+											var id = this.getAttribute('BaoMingId')
+											console.log(id)
+											plus.storage.setItem('BaoMingId',id)
+											mui.openWindow({
+												url:'GongYiXiangqing.html',
+												id:'GongYiXiangqing',
+												extras:{
+													id:id
+												}
+											})
+										})
+									})(GyList[i])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				gongYiList()
+
+				document.getElementById('GengXing').addEventListener('tap',function(){
+					gongYiList()
+				})
+			})
+		</script>
+	</body>
+
+</html>

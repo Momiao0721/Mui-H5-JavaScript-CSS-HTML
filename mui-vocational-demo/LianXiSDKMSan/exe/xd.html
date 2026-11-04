@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 10px;">
+				<div id="XingDe">
+					
+					
+					
+				</div>
+			</div>
+			
+		</div>
+		<script src="../js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function LianXi(){
+
+					mui.ajax(http + '/api/activity/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var XingDeLIstHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									XingDeLIstHTML += `<div style="padding: 5px; border-radius: 10px; background-color: #999999;">
+						<img src="${httpimg + data.rows[i].imgUrl}" style="height: 200px; width: 100%; border-radius: 10px;">
+						<div style="padding: 5px;">
+							<h4>${data.rows[i].activityName}</h4>
+							<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+							<h5 style="color: #000000;" class="mui-ellipsis">${data.rows[i].briefIntroduction}</h5>
+							<hr >
+							<div>
+								<button BaoMinfID="${data.rows[i].id}" type="button" class="mui-btn mui-btn-red mui-media" style="border-radius: 10px; position: absolute;right: 6%;">报名</button>
+								<h4>人数:${data.rows[i].applyNum}</h4>
+							</div>
+						</div>
+					</div><br>`
+								}
+								document.getElementById('XingDe').innerHTML = XingDeLIstHTML
+								var XingDeList = document.querySelectorAll('#XingDe .mui-media')
+
+								for (var i = 0 ; i < XingDeList.length ; i++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+											var id = this.getAttribute('BaoMinfID')
+
+											console.log(id)
+
+											plus.storage.setItem('BaoMinfID',id)
+
+											mui.openWindow({
+												url:'XingDeXiangqing.html',
+												id:'XingDeXiangqing',
+												extras:{
+													id:id
+												}
+											})
+
+										})
+									})(XingDeList[i])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				LianXi()
+			})
+		</script>
+	</body>
+
+</html>

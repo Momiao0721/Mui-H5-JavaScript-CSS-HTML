@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得</h1>
+		</header>
+		<div class="mui-content">
+			
+			
+			<div id="sheet" class="mui-popover mui-popover-bottom mui-popover-action ">
+				
+				<ul class="mui-table-view">
+				  <li class="mui-table-view-cell">
+					  标题
+					  <textarea rows="" cols="" id="ZhengJiaLS"></textarea>
+				  </li>
+				  <li class="mui-table-view-cell">
+					  内容
+					  <textarea rows="" cols="" id="NeRongLd"></textarea>
+				  </li>
+				</ul>
+				
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a id="QueDongZhnegJia"><b>确定</b></a>
+					</li>
+				  <li class="mui-table-view-cell">
+					<a href="#sheet"><b>取消</b></a>
+				  </li>
+				</ul>
+			</div>
+			
+			
+			
+			
+			<div style="padding: 10px;">
+				<div id="XingDeList">
+					
+					
+						
+								
+								
+								
+							
+						
+					
+				</div>
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function XingDeEEEList(){
+
+					var id = localStorage.getItem('userId') || 1
+					console.log(id)
+
+					mui.ajax(http + '/api/history/list?userId=1',{
+						headers:{
+							'Content-Type':'application/json',
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if(data.code == 200){
+								var XinngDeHtml = '';
+								var XingDe = data.rows[i]
+								for (var i = 0 ; i < data.rows.length ; i++) {
+
+									XinngDeHtml += `<div style="padding: 5px; border-radius: 10px; background-color: #929292;">
+						<div style="padding: 5px;">
+
+						<p style="color: #0062CC;">时间:${data.rows[i].issueTime}</p>
+						<hr >
+						<p style="color: #000000;">内容:${data.rows[i].content}</p>`
+
+									XinngDeHtml += `<div style="padding: 5px;">
+							<div style="padding: 5px; background-color: #C7C7CC; border-radius: 5px;">`
+
+									if(data.rows[i].wstudyNote){
+
+										XinngDeHtml += `<h4>标题:${data.rows[i].wstudyNote.noteTitle}</h4>
+								内容:${data.rows[i].wstudyNote.noteContent}
+								<hr >
+								<button type="button" class="mui-btn mui-btn-red mui-media" LsID-SanCu="${data.rows[i].id}" BiJiID-SanCu="${data.rows[i].wstudyNote.noteId}" >删除</button>
+								<button type="button" class="mui-btn mui-btn-red mui-media" GengGaiLsSID="${data.rows[i].id}" >更改</button>
+								`
+
+									}else{
+										XinngDeHtml += `<h4>无</h4>
+										<hr >
+										<a href="#sheet" id="openSheet" class="mui-media-ZhengJia mui-btn mui-btn-primary mui-btn-red" ZheSsngJiaLsSID="${data.rows[i].id}">增加</a>
+										`
+									}
+
+									XinngDeHtml += `</div>
+						</div>`
+
+									XinngDeHtml += `</div>
+					</div>
+					<br>`
+
+								}
+								document.getElementById('XingDeList').innerHTML = XinngDeHtml
+								var SanCuList = document.querySelectorAll('#XingDeList .mui-media')
+								var ZhengJia = document.querySelectorAll('#XingDeList .mui-media-ZhengJia')
+
+								for (var i = 0 ; i < SanCuList.length ; i++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+
+											var LsId = this.getAttribute('LsID-SanCu')
+											var BiJiID = this.getAttribute('BiJiID-SanCu')
+											console.log(LsId)
+											console.log(BiJiID)
+											mui.confirm('message','title',['取消','确认'],function (e) {
+												if(e.index == 1){
+													mui.ajax(http + '/api/history/note',{
+														data:{
+															noteId:BiJiID,
+															studyHistoryId:LsId
+														},
+														headers:{
+															'Authorization':localStorage.getItem('token')
+														},
+
+														dataType:'json',
+														type:'DELETE',
+														timeout:10000,
+														success:function(data){
+															console.log(data.code)
+															if(data.code == 200){
+																mui.toast('删除成功');
+																XingDeEEEList()
+
+															}else{
+																mui.toast('删除失败');
+															}
+														},
+														error:function(xhr,type,errorThrown){
+
+														}
+													});
+												}else{
+
+												}
+											},'div')
+
+										})
+									})(SanCuList[i])
+								}
+
+								for (var j = 0 ; j < ZhengJia.length ; j++) {
+
+									(function(YeiMianmnn){
+										YeiMianmnn.addEventListener('tap',function(){
+
+											var ZhengJiaLsid = this.getAttribute('ZheSsngJiaLsSID')
+											console.log(ZhengJiaLsid)
+
+											document.getElementById('QueDongZhnegJia').addEventListener('tap',function(){
+
+												var noteTitle = document.getElementById('ZhengJiaLS').value;
+												var noteContent = document.getElementById('NeRongLd').value;
+
+												if(noteTitle == '' || noteContent == ''){
+													mui.toast('不能为空')
+												}else{
+
+													mui.ajax(http + '/api/history/note',{
+														data:{
+															studyHistoryId:ZhengJiaLsid,
+															noteTitle:noteTitle,
+															noteContent:noteContent
+														},
+														headers:{
+															'Content-Type':'application/json',
+															'Authorization':localStorage.getItem('token')
+														},
+
+														dataType:'json',
+														type:'post',
+														timeout:10000,
+														success:function(data){
+															console.log(data.code)
+															if(data.code == 200){
+																mui.toast('新增成功')
+
+																mui('#sheet').popover('hide')
+
+																document.getElementById('ZhengJiaLS').value = ''
+																document.getElementById('NeRongLd').value = ''
+																XingDeEEEList()
+															}else{
+																mui.toast('新增失败')
+															}
+														},
+														error:function(xhr,type,errorThrown){
+
+														}
+													});
+
+												}
+
+											})
+
+										})
+									})(ZhengJia[j])
+
+								}
+
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				XingDeEEEList()
+
+			})
+		</script>
+	</body>
+
+</html>

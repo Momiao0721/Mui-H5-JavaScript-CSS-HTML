@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">公益详情</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 5px;">
+				<div id="XiangQingSSSShang">
+					
+					
+				</div>
+			</div>
+			
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<div id="XiaMian">
+				
+			</div>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMingID') || extra.id
+
+				console.log(id)
+
+				function XiangQingShang(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if(data.code == 200){
+								var gongYiHTML = '';
+								var d = data.data
+									gongYiHTML += `<div id="" style="padding: 10px; border-radius: 10px; background-color: #ACACB4;">
+						<img src="${httpimg + d.imgUrl}" style="height: 200px; width: 100%;">
+						<div style="padding: 5px;">
+							<h4>${d.activityName}</h4>
+							<h5 style="color: #000000;">${d.startEndTime}</h5>
+							<h5 style="color: #000000;">${d.initiator}</h5>
+						</div>
+					</div>
+					<br>
+					<div id="" style="padding: 10px; border-radius: 10px; background-color: #ACACB4;">
+						内容：${d.activityDetail}
+					</div>`
+								document.getElementById('XiangQingSSSShang').innerHTML = gongYiHTML
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				XiangQingShang()
+
+				function GonGyiXiangqing(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var GongYiXiangQingXia = '';
+								var JiYi = localStorage.getItem('BaoMingID-JiYi'+id)
+								GongYiXiangQingXia += `<div style="padding: 5px;">
+					<h3>人数:${data.data.applyNum}</h3>
+					<button id="BaoMing" type="button" class="mui-btn mui-btn-red ${JiYi?'mui-disabled':''}" style="position: absolute;right: 0;width: 50%;">报名</button>
+				</div>`
+								document.getElementById('XiaMian').innerHTML = GongYiXiangQingXia
+								document.getElementById('BaoMing').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if (e.index == 1) {
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+
+												dataType:'json',
+												type:'POST',
+												timeout:10000,
+												success:function(data){
+													console.log(data.code)
+													if(data.code == 200){
+														mui.toast('报名成功')
+														localStorage.setItem('BaoMingID-JiYi'+id,1)
+														GonGyiXiangqing()
+													}else{
+														mui.toast('失败')
+													}
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+										} else{
+
+										}
+									},'div')
+
+								})
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				GonGyiXiangqing()
+			})
+		</script>
+	</body>
+
+</html>

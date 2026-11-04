@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header>
+		<div class="mui-content">
+			<button type="button" class="mui-btn mui-btn-red" id="GengXing">更新</button>
+			<div style="padding: 5px;">
+				
+				<div id="baoMingYei">
+					
+					
+					
+				</div>
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				function YeiMian(){
+					mui.ajax(http + '/api/activity/list',{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var BaoTiHTML = '';
+								for (var i = 0 ; i < data.rows.length ; i++) {
+									BaoTiHTML += `<div style="padding: 10px; background-color: #555555; border-radius: 10px;">
+						<img src="${httpimg + data.rows[i].imgUrl}" style="padding: 1px; border-radius: 10px; height: 200px; width: 100%;">
+						<div style="padding: 5px;">
+							<h4>${data.rows[i].activityName}</h4>
+							<h5 style="color: #000000;">${data.rows[i].startEndTime}</h5>
+							<h5 style="color: #000000;" class="mui-ellipsis">${data.rows[i].briefIntroduction}</h5>
+							<hr >
+							<div>
+								<button BaoMingYEiID="${data.rows[i].id}" type="button" class="mui-btn mui-btn-red mui-media" style="position: absolute;right: 5%; border-radius: 10px;">按钮</button>
+								<h4>人数:${data.rows[i].applyNum}</h4>
+							</div>
+						</div>
+					</div><br>`
+								}
+								document.getElementById('baoMingYei').innerHTML = BaoTiHTML
+								var LianXiYiList = document.querySelectorAll('#baoMingYei .mui-media')
+
+								for (var i = 0 ; i < LianXiYiList.length ; i++) {
+									(function(YeiMian){
+										YeiMian.addEventListener('tap',function(){
+											var id = this.getAttribute('BaoMingYEiID')
+											console.log(id)
+											plus.storage.setItem('BaoMingYEiID',id)
+
+											mui.openWindow({
+												url:'LianXiSan.html',
+												id:'LianXiSan',
+												extras:{
+													id:id
+												}
+											})
+
+										})
+									})(LianXiYiList[i])
+								}
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				YeiMian()
+
+				document.getElementById('GengXing').addEventListener('tap',function(){
+					YeiMian()
+				})
+			})
+		</script>
+	</body>
+
+</html>

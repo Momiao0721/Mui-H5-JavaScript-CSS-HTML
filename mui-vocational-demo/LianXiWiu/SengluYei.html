@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport"
+			content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登录</h1>
+		</header>
+		<div class="mui-content">
+			<div id="but" style="padding: 20px;">
+
+				<br>
+				账号
+				<input id="username" type="text" class="mui-input-clear" placeholder="请输入账号" style="border-radius: 10px;">
+				<br>
+				密码
+				<input id="password" type="password" class="mui-input-password" placeholder="请输入密码" style="border-radius: 10px;">
+				<br>
+				<button id="butt" type="button" class="mui-btn mui-btn-red mui-btn-block" style="border-radius: 10px;">按钮</button>
+				
+			</div>
+		</div>
+		<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				mui('#but').on('tap','#butt',function(){
+
+				var username = document.getElementById('username').value;
+				var password = document.getElementById('password').value;
+
+				if(username == '' || password == ''){
+					mui.toast('账号/密码不能为空')
+				}else{
+
+					mui.ajax(http + '/api/login',{
+						data:{
+							username:username,
+							password:password
+						},
+						headers:{
+							'Content-Type':'application/json'
+						},
+
+						dataType:'json',
+						type:'post',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								mui.toast('欢迎' + username + '登陆成功')
+								localStorage.setItem('token',data.token)
+								mui.openWindow({
+									url:'./exe/page.html'
+								})
+							}else{
+								mui.toast('登陆失败')
+							}
+						},
+						error:function(xhr,type,errorThrown){
+							mui.toast('网络错误,请检查接口/查看控制台')
+							console.log(xhr,type,errorThrown)
+						}
+					});
+
+				}
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

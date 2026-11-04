@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">心得详情</h1>
+		</header>
+		<div class="mui-content">
+			
+			<div style="padding: 5px;">
+				
+				<div id="XiangQingShang">
+					
+				</div>
+				
+			</div>
+			
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<div id="Xia" style="padding: 10px;">
+				
+			</div>
+		</nav>
+		<script src="../js/mui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/http.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function () {
+
+				var extra = plus.webview.currentWebview().extra || {}
+				var id = plus.storage.getItem('BaoMinfID') || extra.id
+
+				console.log(id)
+
+				function BaoMIngYeiShang(){
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GET',
+						timeout:10000,
+						success:function(data){
+							console.log(data.code)
+							if (data.code == 200) {
+
+								var XiangQingHTML = '';
+
+									XiangQingHTML += `<div style="padding: 10px; background-color: #C8C7CC; border-radius: 10px;">
+						<img src="${httpimg + data.data.imgUrl}" style="height: 200px; width: 100%; ">
+						<div style="padding: 10px;">
+							<h4>${data.data.activityName}</h4>
+							<h5 style="color: #000000;">${data.data.startEndTime}</h5>
+							<h5 style="color: #000000;">${data.data.initiator}</h5>
+						</div>
+						<h5 style="color: #000000;">简介:${data.data.activityDetail}</h5>
+					</div>`
+								document.getElementById('XiangQingShang').innerHTML = XiangQingHTML
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+				}
+				BaoMIngYeiShang()
+
+				function XiangQingXia(){
+
+					mui.ajax(http + '/api/activity/' + id,{
+						data:{
+
+						},
+						headers:{
+							'Authorization':localStorage.getItem('token')
+						},
+
+						dataType:'json',
+						type:'GEt',
+						timeout:10000,
+						success:function(data){
+							if (data.code == 200) {
+								var XiangqingXia = '';
+								var BaoMimg = localStorage.getItem('baoMingJiYi'+id)
+								XiangqingXia += `<h4>人数:${data.data.applyNum}</h4>
+				<button id="BaoMing" type="button" class="mui-btn mui-btn-red ${BaoMimg?'mui-disabled':''}" style="position: absolute;right: 0;width: 50%;">报名</button>`
+								document.getElementById('Xia').innerHTML = XiangqingXia
+								document.getElementById('BaoMing').addEventListener('tap',function(){
+
+									mui.confirm('message','title',['取消','确认'],function (e) {
+										if(e.index == 1){
+											mui.ajax(http + '/api/activity/apply',{
+												data:{
+													activityId:id
+												},
+												headers:{
+													'Content-Type':'application/json',
+													'Authorization':localStorage.getItem('token')
+												},
+												dataType:'json',
+												type:'post',
+												timeout:10000,
+												success:function(data){
+													console.log(data.code)
+													if (data.code == 200) {
+														mui.toast('报名成功')
+														localStorage.setItem('baoMingJiYi' + id,1)
+														XiangQingXia()
+													}else{
+														mui.toast('报名失败')
+													}
+												},
+												error:function(xhr,type,errorThrown){
+
+												}
+											});
+
+										}else{
+
+											mui.toast('点击取消')
+
+										}
+									},'div')
+
+								})
+							}
+						},
+						error:function(xhr,type,errorThrown){
+
+						}
+					});
+
+				}
+				XiangQingXia()
+			})
+		</script>
+	</body>
+
+</html>
